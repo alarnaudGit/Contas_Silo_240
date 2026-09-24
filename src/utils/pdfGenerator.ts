@@ -542,20 +542,21 @@ export function generateExecutivePdf(
     addHeader('Demonstrativo de Saldos Mensais', 'Evolução Cronológica dos Saldos, Diferenças e Média Móvel (3 Meses)');
 
     drawKpiBoxes([
-      { label: 'Saldo Atual (Ago/26)', value: 'R$ 281.045,94', sub: 'Pico de liquidez do condomínio', color: EMERALD_DARK },
-      { label: 'Média Móvel Últimos 3M', value: 'R$ 231.544,05', sub: 'Média de Jun, Jul e Ago/2026', color: BLUE_HEADER },
-      { label: 'Média Geral do Ano', value: 'R$ 156.991,90', sub: 'Média dos 8 meses (Jan a Ago)', color: SLATE_DARK },
-      { label: 'Média 1º Trimestre', value: 'R$ 113.401,90', sub: 'Média Jan, Fev e Mar (Innova)', color: [180, 83, 9] }
+      { label: 'Saldo Atual (Ago/26)', value: 'R$ 281.045,94', sub: 'Pico de liquidez em conta', color: BLUE_HEADER },
+      { label: 'Média Móvel Líquida (3M)', value: '+ R$ 64.360,89', sub: 'Média Jun, Jul e Ago/2026', color: EMERALD_DARK },
+      { label: 'Média Líquida Geral', value: '+ R$ 35.130,74', sub: 'Sobra média dos 8 meses', color: SLATE_DARK },
+      { label: 'Média Líquida Innova', value: '+ R$ 71.986,17', sub: 'Média Jan, Fev e Mar (Innova)', color: [180, 83, 9] }
     ], 40);
 
     let currentY = 60;
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(8.5);
     doc.setTextColor(SLATE_DARK[0], SLATE_DARK[1], SLATE_DARK[2]);
-    doc.text('DEMONSTRATIVO MÊS A MÊS: RECEITAS, DESPESAS, DIFERENÇAS E MÉDIA MÓVEL', margin, currentY);
+    doc.text('DEMONSTRATIVO MÊS A MÊS: RECEITAS, DESPESAS, DIFERENÇAS E MÉDIA MÓVEL (LÍQUIDA)', margin, currentY);
 
     const timelineRows = monthlyTimeline.map((m) => {
       const diffStr = (m.movLiquido >= 0 ? '+' : '') + formatCurrency(m.movLiquido);
+      const mmStr = (m.mediaMovel3Meses >= 0 ? '+' : '') + formatCurrency(m.mediaMovel3Meses);
       return [
         m.name,
         m.source,
@@ -564,13 +565,13 @@ export function generateExecutivePdf(
         formatCurrency(m.despesas),
         diffStr,
         formatCurrency(m.saldoFinal),
-        formatCurrency(m.mediaMovel3Meses)
+        mmStr
       ];
     });
 
     autoTable(doc, {
       startY: currentY + 2,
-      head: [['Mês / Ano', 'Gestão', 'Saldo Anterior', 'Receitas (+)', 'Despesas (-)', 'Diferença (+/-)', 'Saldo Final (=)', 'Média Móvel (3M)']],
+      head: [['Mês / Ano', 'Gestão', 'Saldo Anterior', 'Receitas (+)', 'Despesas (-)', 'Diferença (+/-)', 'Saldo Final (=)', 'Média Móvel 3M (Diferença)']],
       body: timelineRows,
       theme: 'grid',
       headStyles: { fillColor: [15, 23, 42], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 6.8, halign: 'center' },
@@ -578,19 +579,19 @@ export function generateExecutivePdf(
       columnStyles: {
         0: { cellWidth: 18, fontStyle: 'bold' },
         1: { cellWidth: 18, halign: 'center' },
-        2: { cellWidth: 24, halign: 'right' },
-        3: { cellWidth: 24, halign: 'right', textColor: [4, 120, 87] },
-        4: { cellWidth: 24, halign: 'right', textColor: [190, 18, 60] },
+        2: { cellWidth: 23, halign: 'right' },
+        3: { cellWidth: 23, halign: 'right', textColor: [4, 120, 87] },
+        4: { cellWidth: 23, halign: 'right', textColor: [190, 18, 60] },
         5: { cellWidth: 24, halign: 'right', fontStyle: 'bold' },
-        6: { cellWidth: 26, halign: 'right', fontStyle: 'bold', textColor: [30, 58, 138] },
-        7: { cellWidth: 24, halign: 'right', fontStyle: 'bold' }
+        6: { cellWidth: 25, halign: 'right', fontStyle: 'bold', textColor: [30, 58, 138] },
+        7: { cellWidth: 28, halign: 'right', fontStyle: 'bold' }
       },
       didParseCell: (data) => {
-        if (data.column.index === 5 && data.row.section === 'body') {
+        if ((data.column.index === 5 || data.column.index === 7) && data.row.section === 'body') {
           const val = data.cell.raw as string;
-          if (val.startsWith('+')) {
+          if (val && val.startsWith('+')) {
             data.cell.styles.textColor = [4, 120, 87];
-          } else {
+          } else if (val && val.startsWith('-')) {
             data.cell.styles.textColor = [190, 18, 60];
           }
         }
@@ -601,23 +602,24 @@ export function generateExecutivePdf(
 
     // Notas explicativas do cálculo
     doc.setFillColor(SLATE_LIGHT[0], SLATE_LIGHT[1], SLATE_LIGHT[2]);
-    doc.roundedRect(margin, currentY, pageWidth - margin * 2, 20, 1.5, 1.5, 'F');
+    doc.roundedRect(margin, currentY, pageWidth - margin * 2, 23, 1.5, 1.5, 'F');
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(7.5);
     doc.setTextColor(SLATE_DARK[0], SLATE_DARK[1], SLATE_DARK[2]);
-    doc.text('METODOLOGIA E ANÁLISE DE TENDÊNCIA FINANCEIRA', margin + 3, currentY + 4.5);
+    doc.text('METODOLOGIA E ANÁLISE DA MÉDIA MÓVEL LÍQUIDA', margin + 3, currentY + 4.5);
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(6.5);
+    doc.setFontSize(6.3);
     doc.text(
       '• Diferença Mensal (Superávit/Déficit): Apurada como Receitas Liquidadas menos Despesas Pagas no mês.\n' +
-      '• Média Móvel (3M): Calculada sobre o saldo final do mês corrente somado aos dois meses antecedentes, dividida por 3.\n' +
-      '• Tendência Ascendente: O saldo saltou de R$ 40.356,62 (Fev/26) para R$ 281.045,94 (Ago/26), com a média móvel trimestral\n' +
-      '  passando de R$ 113.401,90 para expressivos R$ 231.544,05 (crescimento de 104,2%).',
+      '• Média Móvel (3M): Calculada estritamente sobre a coluna Diferença (Receitas - Despesas), nunca sobre o Saldo Final acumulado.\n' +
+      '• Esclarecimento Jan-Mar: No 1º trimestre, como a implantação partiu de saldo R$ 0,00, a soma das diferenças coincidiu numericamente com o saldo final da época.\n' +
+      '• Superávit Médio Trimestral Recente: Nos últimos 3 meses (Jun, Jul e Ago/2026), a média móvel líquida alcançou expressivos\n' +
+      '  + R$ 64.360,89 por mês (+R$ 108,2K em Jun, +R$ 21,4K em Jul e +R$ 63,6K em Ago).',
       margin + 3,
-      currentY + 9
+      currentY + 8.5
     );
 
-    addSignatures(currentY + 26);
+    addSignatures(currentY + 28);
   };
 
   // 5. RENDER DOCUMENTOS TAB

@@ -32,8 +32,15 @@ import {
   Eye
 } from 'lucide-react';
 
+interface MovingAverageComponent {
+  monthName: string;
+  receitas: number;
+  despesas: number;
+  diferenca: number;
+}
+
 // Monthly timeline data from the reports
-interface MonthSummary {
+export interface MonthSummary {
   id: string;
   name: string;
   periodLabel: string;
@@ -42,16 +49,33 @@ interface MonthSummary {
   receitas: number;
   despesas: number;
   saldoFinal: number;
-  movLiquido: number;
-  mediaMovel3Meses: number;
+  movLiquido: number; // Diferença (Receitas - Despesas)
+  mediaMovel3Meses: number; // Média móvel 3M calculada estritamente sobre a coluna Diferença
   mediaMovelDesc: string;
+  mediaMovelFormula: string;
+  mediaMovelComponents: MovingAverageComponent[];
   inadimplencia?: number;
   notes: string;
   topRevenues: { name: string; category: string; amount: number }[];
   topExpenses: { name: string; category: string; amount: number }[];
 }
 
-const monthlyTimeline: MonthSummary[] = [
+interface RawMonthData {
+  id: string;
+  name: string;
+  periodLabel: string;
+  source: 'Innova' | 'Controlar';
+  saldoAnterior: number;
+  receitas: number;
+  despesas: number;
+  saldoFinal: number;
+  inadimplencia?: number;
+  notes: string;
+  topRevenues: { name: string; category: string; amount: number }[];
+  topExpenses: { name: string; category: string; amount: number }[];
+}
+
+const rawMonthlyTimelineData: RawMonthData[] = [
   {
     id: 'jan-2026',
     name: 'Jan/2026',
@@ -61,9 +85,6 @@ const monthlyTimeline: MonthSummary[] = [
     receitas: 83890.56,
     despesas: 0.00,
     saldoFinal: 83890.56,
-    movLiquido: 83890.56,
-    mediaMovel3Meses: 83890.56,
-    mediaMovelDesc: '1º mês de registro (saldo inicial)',
     notes: 'Abertura do condomínio e emissão da 1ª taxa condominial pela Innova.',
     topRevenues: [
       { name: 'Taxa Condominial Ordinária (Janeiro)', category: 'Taxa Ordinária', amount: 62134.62 },
@@ -84,9 +105,6 @@ const monthlyTimeline: MonthSummary[] = [
     receitas: 80042.98,
     despesas: 123576.92,
     saldoFinal: 40356.62,
-    movLiquido: -43533.94,
-    mediaMovel3Meses: 62123.59,
-    mediaMovelDesc: 'Média de Jan e Fev (R$ 83,8K + R$ 40,3K)/2',
     inadimplencia: 85230.29,
     notes: 'Mês de implantação. Incluiu estorno de R$ 51.200,00 depositado por engano e R$ 49.247,00 da Fênix (Jan/Fev).',
     topRevenues: [
@@ -120,9 +138,6 @@ const monthlyTimeline: MonthSummary[] = [
     receitas: 193868.45,
     despesas: 18266.55,
     saldoFinal: 215958.52,
-    movLiquido: 175601.90,
-    mediaMovel3Meses: 113401.90,
-    mediaMovelDesc: 'Média Jan, Fev e Mar (R$ 83,8K + R$ 40,3K + R$ 215,9K)/3',
     inadimplencia: 3692.43,
     notes: 'Recuperação do acordo da construtora (R$ 167.781,12) e abertura de conta corrente própria no Itaú.',
     topRevenues: [
@@ -159,9 +174,6 @@ const monthlyTimeline: MonthSummary[] = [
     receitas: 0.00,
     despesas: 82824.44,
     saldoFinal: 133134.08,
-    movLiquido: -82824.44,
-    mediaMovel3Meses: 129816.41,
-    mediaMovelDesc: 'Média Fev, Mar e Abr (R$ 40,3K + R$ 215,9K + R$ 133,1K)/3',
     notes: 'Período de transição de gestão da Innova para a Controlar, fixando o saldo inicial em R$ 133.134,08.',
     topRevenues: [
       { name: 'Receitas de Transição / Saldos Vinculados', category: 'Transição', amount: 0.00 }
@@ -179,9 +191,6 @@ const monthlyTimeline: MonthSummary[] = [
     receitas: 51879.14,
     despesas: 97049.94,
     saldoFinal: 87963.28,
-    movLiquido: -45170.80,
-    mediaMovel3Meses: 145685.29,
-    mediaMovelDesc: 'Média Mar, Abr e Mai (R$ 215,9K + R$ 133,1K + R$ 87,9K)/3',
     notes: '1ª parcela das máquinas (R$ 25.600,00) e terceirização acumulada (R$ 59.645,46).',
     topRevenues: [
       { name: 'Taxa Extra: Sistema de Segurança', category: 'Taxa Extra', amount: 25123.27 },
@@ -213,9 +222,6 @@ const monthlyTimeline: MonthSummary[] = [
     receitas: 184384.42,
     despesas: 76230.04,
     saldoFinal: 196117.66,
-    movLiquido: 108154.38,
-    mediaMovel3Meses: 139071.67,
-    mediaMovelDesc: 'Média Abr, Mai e Jun (R$ 133,1K + R$ 87,9K + R$ 196,1K)/3',
     notes: 'Arrecadação robusta de taxas ordinárias (R$ 148k) e 2ª parcela de máquinas (R$ 25.600,00).',
     topRevenues: [
       { name: 'Taxa Ordinária Condominial', category: 'Taxa Ordinária', amount: 148068.86 },
@@ -248,9 +254,6 @@ const monthlyTimeline: MonthSummary[] = [
     receitas: 112936.63,
     despesas: 91585.74,
     saldoFinal: 217468.55,
-    movLiquido: 21350.89,
-    mediaMovel3Meses: 167183.16,
-    mediaMovelDesc: 'Média Mai, Jun e Jul (R$ 87,9K + R$ 196,1K + R$ 217,4K)/3',
     notes: '3ª e última parcela de máquinas (R$ 25.600,00) e fatura Neoenergia de R$ 8.825,52.',
     topRevenues: [
       { name: 'Taxa Ordinária Condominial', category: 'Taxa Ordinária', amount: 101634.62 },
@@ -283,9 +286,6 @@ const monthlyTimeline: MonthSummary[] = [
     receitas: 105992.28,
     despesas: 42414.89,
     saldoFinal: 281045.94,
-    movLiquido: 63577.39,
-    mediaMovel3Meses: 231544.05,
-    mediaMovelDesc: 'Média Jun, Jul e Ago (R$ 196,1K + R$ 217,4K + R$ 281,0K)/3',
     notes: 'Despesas estabilizadas sem parcelas de máquinas. Saldo atinge o ápice de R$ 281.045,94.',
     topRevenues: [
       { name: 'Taxa Ordinária Condominial', category: 'Taxa Ordinária', amount: 100504.10 },
@@ -308,6 +308,48 @@ const monthlyTimeline: MonthSummary[] = [
     ]
   }
 ];
+
+// Cálculo estritamente dinâmico da coluna Diferença (Receitas - Despesas)
+// e da Média Móvel de 3 meses baseada EXCLUSIVAMENTE nas diferenças calculadas
+export const monthlyTimeline: MonthSummary[] = rawMonthlyTimelineData.map((month, idx, allMonths) => {
+  // 1. Diferença líquida mensal apurada como Receitas Líquidas menos Despesas Pagas
+  const movLiquido = Number((month.receitas - month.despesas).toFixed(2));
+
+  // 2. Janela dos últimos 3 meses (ou decorridos até 3) baseada na coluna "Diferença"
+  const windowSlice = allMonths.slice(Math.max(0, idx - 2), idx + 1);
+  const mediaMovelComponents: MovingAverageComponent[] = windowSlice.map((w) => ({
+    monthName: w.name,
+    receitas: w.receitas,
+    despesas: w.despesas,
+    diferenca: Number((w.receitas - w.despesas).toFixed(2))
+  }));
+
+  const sumDifferences = mediaMovelComponents.reduce((acc, curr) => acc + curr.diferenca, 0);
+  const mediaMovel3Meses = Number((sumDifferences / windowSlice.length).toFixed(2));
+
+  // 3. Descrição explicativa detalhada da fórmula demonstrando a média das diferenças
+  const windowNames = windowSlice.map((w) => w.name.split('/')[0]).join(', ');
+  const formulaDiffs = mediaMovelComponents
+    .map((c) => `${c.diferenca >= 0 ? '+' : '-'}R$ ${(Math.abs(c.diferenca) / 1000).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}K`)
+    .join(' ');
+
+  const mediaMovelDesc = windowSlice.length === 1
+    ? `Mês base inicial (+R$ ${(movLiquido / 1000).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}K)`
+    : `Média ${windowNames}: (${formulaDiffs}) / ${windowSlice.length} = ${mediaMovel3Meses >= 0 ? '+' : '-'}R$ ${(Math.abs(mediaMovel3Meses) / 1000).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}K`;
+
+  const mediaMovelFormula = windowSlice.length === 1
+    ? `Diferença ${windowSlice[0].name}: R$ ${movLiquido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
+    : `(${mediaMovelComponents.map((c) => `${c.monthName}: ${c.diferenca >= 0 ? '+' : ''}R$ ${c.diferenca.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`).join(' + ')}) ÷ ${windowSlice.length} = ${mediaMovel3Meses >= 0 ? '+' : ''}R$ ${mediaMovel3Meses.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+
+  return {
+    ...month,
+    movLiquido,
+    mediaMovel3Meses,
+    mediaMovelDesc,
+    mediaMovelFormula,
+    mediaMovelComponents
+  };
+});
 
 interface FinancialItem {
   id: string;
@@ -537,9 +579,9 @@ export default function App() {
     summaryText += `• Recuperado em Março/2026: R$ 84.330,91 (98,9% da dívida liquidada em 30 dias)\n`;
     summaryText += `• Redução da Inadimplência: -95,7%\n\n`;
     summaryText += `3. SALDOS MENSAIS E MÉDIAS MÓVEIS (8 MESES):\n`;
-    summaryText += `• Média Móvel dos Últimos 3 Meses (Jun, Jul, Ago): R$ 231.544,05 (+104% vs 1º Tri)\n`;
-    summaryText += `• Média Geral Mensal de 2026: R$ 156.991,90\n`;
-    summaryText += `• Média do 1º Trimestre (Innova): R$ 113.401,90\n`;
+    summaryText += `• Média Móvel Líquida dos Últimos 3 Meses (Jun, Jul, Ago): + R$ 64.360,89 / mês\n`;
+    summaryText += `• Média Geral de Diferença Mensal de 2026: + R$ 35.130,74 / mês\n`;
+    summaryText += `• Média Líquida da Gestão Controlar (Mai a Ago): + R$ 36.977,97 / mês\n`;
     summaryText += `• Saldo de Fev/26: R$ 40.356,62 | Saldo de Ago/26: R$ 281.045,94\n\n`;
     summaryText += `Signatários: Maurício Lacerda Sobrinho (Síndico), Carla Cristina Belchior (Gerente Financeira) e Fabio Luiz Siqueira de Paula (Controller).`;
 
@@ -1780,36 +1822,74 @@ export default function App() {
 
               {/* Averages Summary Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div className="p-4 rounded-xl border border-indigo-200 bg-indigo-50/70 shadow-xs">
-                  <span className="text-[11px] font-bold text-indigo-900 block">Média Últimos 3 Meses (Jun-Ago)</span>
-                  <span className="text-xl font-bold font-mono text-indigo-950 mt-0.5 block">
-                    R$ 231.544,05
+                <div className="p-4 rounded-xl border border-emerald-200 bg-emerald-50/70 shadow-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold text-emerald-900 block">Média Móvel 3M (Diferença)</span>
+                    <span className="text-[9px] font-bold uppercase bg-emerald-200/80 text-emerald-900 px-1.5 py-0.5 rounded">Rec - Desp</span>
+                  </div>
+                  <span className="text-xl font-bold font-mono text-emerald-950 mt-1 block">
+                    + R$ 64.360,89
                   </span>
-                  <span className="text-[11px] text-indigo-700 font-medium">Fase de maior liquidez e estabilidade</span>
+                  <span className="text-[11px] text-emerald-700 font-medium">Superávit líquido médio (Jun, Jul e Ago)</span>
                 </div>
 
                 <div className="p-4 rounded-xl border border-slate-200 bg-white shadow-2xs">
-                  <span className="text-[11px] font-semibold text-slate-500 block">Média Geral (8 Meses)</span>
-                  <span className="text-lg font-bold font-mono text-slate-900 mt-0.5 block">
-                    R$ 156.991,90
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-semibold text-slate-500 block">Média da Diferença (8 Meses)</span>
+                    <span className="text-[9px] font-medium text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">Mensal</span>
+                  </div>
+                  <span className="text-lg font-bold font-mono text-slate-900 mt-1 block">
+                    + R$ 35.130,74
                   </span>
-                  <span className="text-[11px] text-slate-400">Jan a Ago/2026</span>
-                </div>
-
-                <div className="p-4 rounded-xl border border-emerald-100 bg-emerald-50/50">
-                  <span className="text-[11px] font-semibold text-emerald-800 block">Média Gestão Controlar</span>
-                  <span className="text-lg font-bold font-mono text-emerald-950 mt-0.5 block">
-                    R$ 183.145,90
-                  </span>
-                  <span className="text-[11px] text-emerald-600">Abr a Ago/2026 (5 meses)</span>
+                  <span className="text-[11px] text-slate-400">Sobra média mensal apurada</span>
                 </div>
 
                 <div className="p-4 rounded-xl border border-blue-100 bg-blue-50/50">
-                  <span className="text-[11px] font-semibold text-blue-800 block">Média Gestão Innova</span>
-                  <span className="text-lg font-bold font-mono text-blue-950 mt-0.5 block">
-                    R$ 113.401,90
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-semibold text-blue-800 block">Média Diferença Controlar</span>
+                    <span className="text-[9px] font-medium text-blue-700 bg-blue-100 px-1.5 py-0.5 rounded">Mai-Ago</span>
+                  </div>
+                  <span className="text-lg font-bold font-mono text-blue-950 mt-1 block">
+                    + R$ 36.977,97
                   </span>
-                  <span className="text-[11px] text-blue-600">Jan a Mar/2026 (1º Trimestre)</span>
+                  <span className="text-[11px] text-blue-600">Superávit mensal operacional</span>
+                </div>
+
+                <div className="p-4 rounded-xl border border-indigo-100 bg-indigo-50/50">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-semibold text-indigo-800 block">Média Diferença Innova</span>
+                    <span className="text-[9px] font-medium text-indigo-700 bg-indigo-100 px-1.5 py-0.5 rounded">Jan-Mar</span>
+                  </div>
+                  <span className="text-lg font-bold font-mono text-indigo-950 mt-1 block">
+                    + R$ 71.986,17
+                  </span>
+                  <span className="text-[11px] text-indigo-600">Impulsionado por acerto construtora</span>
+                </div>
+              </div>
+
+              {/* Esclarecimento Metodológico: Média Móvel sobre Diferença (Rec - Desp) */}
+              <div className="bg-gradient-to-r from-blue-50/90 to-indigo-50/90 border border-blue-200 rounded-xl p-4 mb-6 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-blue-600 text-white rounded-lg shrink-0 mt-0.5 shadow-xs">
+                    <ShieldCheck className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h5 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                      <span>Metodologia: Média Móvel Calculada Estritamente sobre a "Diferença (Rec - Desp)"</span>
+                      <span className="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded font-bold">Auditado</span>
+                    </h5>
+                    <p className="text-xs text-slate-700 mt-1 leading-relaxed">
+                      A média móvel trimestral reflete <strong>exclusivamente a sobra/déficit operacional líquido de cada mês (Receitas Líquidas − Despesas Pagas)</strong>, e <em>nunca o Saldo Final acumulado em conta corrente</em>.
+                    </p>
+                    <p className="text-[11px] text-slate-500 mt-1">
+                      💡 <strong>Esclarecimento do 1º Trimestre:</strong> Em Jan, Fev e Mar/2026, como a implantação do condomínio partiu de saldo inicial zero, a soma acumulada das diferenças coincidiu temporariamente com o Saldo Final daquele início. A partir de Abril/2026, com o saldo inicial acumulado de R$ 133K, as grandezas diferem totalmente (ex.: em <strong>Ago/2026</strong> a média móvel da diferença é de <strong>+R$ 64.360,89</strong>, enquanto a média do saldo final seria de <strong>R$ 231.544,05</strong>).
+                    </p>
+                  </div>
+                </div>
+                <div className="bg-white px-4 py-2.5 rounded-xl border border-blue-200 shrink-0 text-center shadow-2xs self-stretch md:self-auto flex flex-col justify-center">
+                  <span className="text-[10px] uppercase font-bold text-slate-500">Média Móvel Recente (3M)</span>
+                  <span className="text-lg font-black font-mono text-emerald-700">+ R$ 64.360,89</span>
+                  <span className="text-[10px] text-slate-400 font-medium">Jun (+108K), Jul (+21K), Ago (+64K)</span>
                 </div>
               </div>
 
@@ -1854,11 +1934,13 @@ export default function App() {
                         <th className="py-3 px-3 text-right text-emerald-700">Receitas (+)</th>
                         <th className="py-3 px-3 text-right text-rose-700">Despesas (-)</th>
                         <th className="py-3 px-3 text-right bg-slate-100/80 font-bold text-slate-900 border-x border-slate-200">
-                          Diferença (Rec - Desp)
+                          <div>Diferença (Rec - Desp)</div>
+                          <span className="text-[9px] text-slate-500 font-normal lowercase block">superávit/déficit</span>
                         </th>
                         <th className="py-3 px-3 text-right text-blue-900 font-bold">Saldo Final (=)</th>
-                        <th className="py-3 px-3 text-right bg-indigo-50/50 font-bold text-indigo-950 border-l border-indigo-100">
-                          Média Móvel (3M)
+                        <th className="py-3 px-3 text-right bg-indigo-50/70 font-bold text-indigo-950 border-l border-indigo-100">
+                          <div>Média Móvel 3M (Diferença)</div>
+                          <span className="text-[9px] text-indigo-700 font-normal lowercase block">calculada sobre rec − desp</span>
                         </th>
                         <th className="py-3 px-3 text-center">Detalhamento</th>
                       </tr>
@@ -1867,6 +1949,7 @@ export default function App() {
                       {monthlyTimeline.map((month) => {
                         const isExpanded = expandedMonthId === month.id;
                         const isPositiveDiff = month.movLiquido >= 0;
+                        const isPositiveMM = month.mediaMovel3Meses >= 0;
 
                         return (
                           <tr
@@ -1911,10 +1994,12 @@ export default function App() {
                             <td className="py-3 px-3 text-right font-mono font-bold text-blue-900 whitespace-nowrap">
                               R$ {month.saldoFinal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                             </td>
-                            <td className="py-3 px-3 text-right font-mono font-bold text-indigo-900 bg-indigo-50/40 whitespace-nowrap border-l border-indigo-100">
-                              R$ {month.mediaMovel3Meses.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                              <span className="text-[10px] text-indigo-500 block font-normal font-sans" title={month.mediaMovelDesc}>
-                                {month.mediaMovelDesc.split('(')[0]}
+                            <td className="py-3 px-3 text-right font-mono font-bold whitespace-nowrap border-l border-indigo-100 bg-indigo-50/40">
+                              <span className={isPositiveMM ? 'text-emerald-700' : 'text-rose-700'}>
+                                {isPositiveMM ? '+' : ''}R$ {month.mediaMovel3Meses.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                              </span>
+                              <span className="text-[10px] text-slate-500 block font-normal font-sans" title={month.mediaMovelDesc}>
+                                {month.mediaMovelDesc}
                               </span>
                             </td>
                             <td className="py-3 px-3 text-center whitespace-nowrap">
@@ -1975,10 +2060,69 @@ export default function App() {
                           </div>
                           <button
                             onClick={() => setExpandedMonthId(null)}
-                            className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+                            className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors cursor-pointer"
                           >
                             Fechar (X)
                           </button>
+                        </div>
+                      </div>
+
+                      {/* Memória de Cálculo da Média Móvel sobre Diferença (Rec - Desp) */}
+                      <div className="bg-slate-800/90 rounded-xl p-4 border border-indigo-500/30">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-700/80 pb-3 mb-3">
+                          <div className="flex items-center gap-2">
+                            <span className="p-1.5 rounded-md bg-indigo-500/20 text-indigo-400">
+                              <TrendingUp className="w-4 h-4" />
+                            </span>
+                            <div>
+                              <h5 className="text-xs font-bold text-white uppercase tracking-wider">
+                                Memória de Cálculo da Média Móvel dos Últimos 3 Meses
+                              </h5>
+                              <p className="text-[11px] text-slate-400">
+                                Calculada estritamente sobre a coluna <strong>Diferença (Receitas − Despesas)</strong>
+                              </p>
+                            </div>
+                          </div>
+                          <span className="text-xs font-mono font-bold px-2.5 py-1 rounded bg-indigo-950 text-indigo-300 border border-indigo-700/50">
+                            Resultado: {activeMonthData.mediaMovel3Meses >= 0 ? '+' : ''}R$ {activeMonthData.mediaMovel3Meses.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
+                          {activeMonthData.mediaMovelComponents.map((comp, cIdx) => (
+                            <div key={cIdx} className="bg-slate-900/80 rounded-lg p-3 border border-slate-700">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase">{comp.monthName}</span>
+                                <span className="text-[9px] text-slate-500 font-mono">mês {cIdx + 1}/{activeMonthData.mediaMovelComponents.length}</span>
+                              </div>
+                              <div className="text-[11px] text-slate-300 space-y-0.5 mt-1.5">
+                                <div className="flex justify-between">
+                                  <span>Receitas:</span>
+                                  <span className="text-emerald-400 font-mono">+R$ {comp.receitas.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span>Despesas:</span>
+                                  <span className="text-rose-400 font-mono">-R$ {comp.despesas.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                                </div>
+                                <div className="flex justify-between border-t border-slate-800 pt-1 font-bold">
+                                  <span className="text-white">Diferença:</span>
+                                  <span className={`font-mono ${comp.diferenca >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                                    {comp.diferenca >= 0 ? '+' : ''}R$ {comp.diferenca.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800 text-[11px] font-mono text-slate-300 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                          <div className="truncate max-w-full">
+                            <span className="text-indigo-400 font-bold font-sans mr-2">Fórmula:</span>
+                            <span>{activeMonthData.mediaMovelFormula}</span>
+                          </div>
+                          <span className="text-[10px] text-emerald-400 font-sans font-semibold bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/40 shrink-0">
+                            ✓ Confirmado sobre Diferença (Rec - Desp)
+                          </span>
                         </div>
                       </div>
 
@@ -2438,9 +2582,9 @@ export default function App() {
                       </div>
 
                       <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                        <span className="text-[10px] uppercase font-bold text-blue-700 block">Média Móvel (3M)</span>
-                        <span className="text-sm font-bold text-blue-900 font-mono block mt-0.5">R$ 231.544,05</span>
-                        <span className="text-[10px] text-blue-600 font-medium">+104% vs 1º Tri</span>
+                        <span className="text-[10px] uppercase font-bold text-blue-700 block">Média Móvel Líquida (3M)</span>
+                        <span className="text-sm font-bold text-blue-900 font-mono block mt-0.5">+ R$ 64.360,89</span>
+                        <span className="text-[10px] text-blue-600 font-medium">Média Jun, Jul e Ago/26</span>
                       </div>
 
                       <div className="p-3 bg-indigo-50 border border-indigo-200 rounded-lg">
@@ -2469,7 +2613,7 @@ export default function App() {
                                 <th className="p-2 text-right">Despesas (-)</th>
                                 <th className="p-2 text-right">Diferença Mensal</th>
                                 <th className="p-2 text-right">Saldo Final</th>
-                                <th className="p-2 text-right">Média Móvel (3M)</th>
+                                <th className="p-2 text-right">Média Móvel 3M (Diferença)</th>
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100 font-mono text-[11px]">
@@ -2495,8 +2639,10 @@ export default function App() {
                                   <td className="p-2 text-right font-bold text-blue-900 bg-blue-50/40">
                                     R$ {m.saldoFinal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                   </td>
-                                  <td className="p-2 text-right text-slate-700">
-                                    R$ {m.mediaMovel3Meses.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                  <td className="p-2 text-right font-bold text-indigo-900 bg-indigo-50/40">
+                                    <span className={m.mediaMovel3Meses >= 0 ? 'text-emerald-700' : 'text-rose-700'}>
+                                      {m.mediaMovel3Meses >= 0 ? '+' : ''}R$ {m.mediaMovel3Meses.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                    </span>
                                   </td>
                                 </tr>
                               ))}
@@ -2725,10 +2871,11 @@ Emissão Oficial: 24/09/2026 • Auditoria Contábil
 • Redução Histórica da Inadimplência: - 95,7%
 
 3. SALDOS MENSAIS E MÉDIAS MÓVEIS (8 MESES):
-• Média Móvel dos Últimos 3 Meses (Jun, Jul, Ago): R$ 231.544,05 (+104% vs início do ano)
-• Média Geral Mensal de 2026 (Jan a Ago): R$ 156.991,90
-• Média do 1º Trimestre (Innova): R$ 113.401,90
-• Superávit Médio Mensal (Controlar): + R$ 36.977,97 / mês
+• Média Móvel Líquida dos Últimos 3 Meses (Jun, Jul, Ago): + R$ 64.360,89 / mês
+• Média Geral de Diferença Mensal de 2026: + R$ 35.130,74 / mês
+• Média Líquida da Gestão Controlar (Mai a Ago): + R$ 36.977,97 / mês
+• Média Líquida da Gestão Innova (Jan a Mar): + R$ 71.986,17 / mês
+• Superávit Médio Operacional Mensal: + R$ 36.977,97 / mês
 
 Signatários Oficiais:
 - Maurício Lacerda Sobrinho (Síndico Profissional)
