@@ -1,0 +1,6 @@
+{
+  "name": "Portal de Prestação de Contas - Moinho Silo 240",
+  "description": "Análise detalhada, resumos executivos e comparativo financeiro das prestações de contas do Moinho Silo 240 (Innova e Controlar).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

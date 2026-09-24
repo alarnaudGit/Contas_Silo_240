@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 10mm 12mm;
+  }
+
+  body {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    font-size: 11pt;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide interactive controls, header navbar, filters, search, buttons */
+  .no-print,
+  header,
+  nav,
+  button,
+  input,
+  select {
+    display: none !important;
+  }
+
+  /* Force display of print-only headers and watermarks */
+  .print-only {
+    display: block !important;
+  }
+
+  /* Card and table styling for print */
+  .bg-white,
+  .bg-slate-50,
+  .bg-slate-900 {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Prevent awkward splits */
+  tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Remove box shadows to keep print crisp */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Ensure background colors and borders render */
+  .border {
+    border-color: #cbd5e1 !important;
+  }
+}
+
+.print-only {
+  display: none;
+}
