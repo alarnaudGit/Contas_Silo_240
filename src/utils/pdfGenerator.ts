@@ -50,7 +50,7 @@ const ROSE_DARK = [190, 18, 60]; // #be123c
 
 export function generateExecutivePdf(
   scope: 'current' | 'all',
-  activeTab: 'dashboard' | 'inadimplencia' | 'analise281k' | 'propostaTaxa' | 'timeline' | 'documentos',
+  activeTab: 'resumoExecutivo' | 'dashboard' | 'inadimplencia' | 'analise281k' | 'propostaTaxa' | 'timeline' | 'documentos',
   monthlyTimeline: MonthSummaryForPdf[],
   grouping: TopGrouping,
   selectedFilterLabel: string
@@ -65,46 +65,54 @@ export function generateExecutivePdf(
   const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 14;
 
-  const addHeader = (title: string, subtitle: string) => {
+  const addHeader = (badge: string, documentTitle: string, subtitle?: string) => {
     // Top banner
     doc.setFillColor(NAVY[0], NAVY[1], NAVY[2]);
     doc.rect(0, 0, pageWidth, 24, 'F');
 
-    // Title & Brand
+    // Title & Brand (Left)
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(11);
-    doc.text('CONDOMÍNIO DO EDIFÍCIO MOINHO SILO 240', margin, 9);
+    doc.setFontSize(10.5);
+    doc.text('CONDOMÍNIO DO EDIFÍCIO MOINHO SILO 240', margin, 9.5);
 
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(7.5);
-    doc.text('CNPJ: 47.289.584/0002-01 • Inscrição Municipal: 7765541 • Bairro do Recife, Recife-PE', margin, 14);
-
-    // Document Type Pill
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8);
-    doc.setTextColor(191, 219, 254);
-    doc.text(title.toUpperCase(), pageWidth - margin, 9, { align: 'right' });
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(7);
+    doc.setFontSize(7.2);
     doc.setTextColor(203, 213, 225);
-    doc.text('Emissão: 24/09/2026 • Auditoria Contábil', pageWidth - margin, 14, { align: 'right' });
+    doc.text('CNPJ: 47.289.584/0002-01 • Inscrição Municipal: 7765541 • Bairro do Recife, Recife-PE', margin, 15);
+
+    // Document Type Pill (Right) - Keep short and compact to prevent any overlap
+    const cleanBadge = (badge || 'RELATÓRIO').toUpperCase();
+    const displayBadge = cleanBadge.length > 26 ? cleanBadge.substring(0, 24) + '...' : cleanBadge;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7.5);
+    doc.setTextColor(191, 219, 254);
+    doc.text(displayBadge, pageWidth - margin, 9.5, { align: 'right' });
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6.8);
+    doc.setTextColor(203, 213, 225);
+    doc.text('Emissão Oficial: 24/09/2026 • Auditoria Contábil', pageWidth - margin, 15, { align: 'right' });
 
     // Thin accent bar
     doc.setFillColor(BLUE_HEADER[0], BLUE_HEADER[1], BLUE_HEADER[2]);
     doc.rect(0, 24, pageWidth, 1.5, 'F');
 
-    // Section Subtitle
-    doc.setTextColor(SLATE_DARK[0], SLATE_DARK[1], SLATE_DARK[2]);
+    // Section Title & Subtitle below banner
+    doc.setTextColor(NAVY[0], NAVY[1], NAVY[2]);
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(10);
-    doc.text(subtitle, margin, 32);
+    doc.setFontSize(9.8);
+    const splitTitle = doc.splitTextToSize(documentTitle, pageWidth - margin * 2);
+    doc.text(splitTitle, margin, 30.5);
 
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(7.5);
-    doc.setTextColor(100, 116, 139);
-    doc.text('Dados oficiais consolidados das prestações de contas Innova Housing e Controlar Condomínio Digital', margin, 36);
+    if (subtitle) {
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7.0);
+      doc.setTextColor(100, 116, 139);
+      const subY = 30.5 + (splitTitle.length * 3.8);
+      const splitSub = doc.splitTextToSize(subtitle, pageWidth - margin * 2);
+      doc.text(splitSub, margin, subY);
+    }
   };
 
   const addSignatures = (startY: number) => {
@@ -210,10 +218,92 @@ export function generateExecutivePdf(
     });
   };
 
+  // 0. RENDER RESUMO EXECUTIVO TAB (Síntese Compacta e Proposta)
+  const renderResumoExecutivoSection = (isFirstPage: boolean) => {
+    if (!isFirstPage) doc.addPage();
+    addHeader(
+      'RESUMO EXECUTIVO',
+      'Síntese Executiva: Viabilidade para Redução da Taxa Ordinária',
+      'Parecer Técnico Conclusivo: Saldo de R$ 281K, Quitação das Máquinas e Cota Sugerida de R$ 965,00 (65 Unidades)'
+    );
+
+    drawKpiBoxes([
+      { label: 'Taxa Atual (65 Unidades)', value: 'R$ 1.545,90', sub: 'Total: R$ 100.483,50/mês', color: ROSE_DARK },
+      { label: 'Nova Taxa Recomendada', value: 'R$ 965,00', sub: 'Redução de - 37,6% (- R$ 580,90/mês)', color: EMERALD_DARK },
+      { label: 'Economia Anual / Morador', value: 'R$ 6.970,80', sub: 'Coletiva: R$ 453.102,00/ano', color: BLUE_HEADER },
+      { label: 'Saldo Caixa / Aplicações', value: 'R$ 281.045,94', sub: 'R$ 210.390,04 livre (4,1 meses)', color: SLATE_DARK }
+    ], 40);
+
+    let currentY = 58;
+
+    // Highlight Box: Pilares da Decisão
+    doc.setFillColor(SLATE_LIGHT[0], SLATE_LIGHT[1], SLATE_LIGHT[2]);
+    doc.roundedRect(margin, currentY, pageWidth - margin * 2, 33, 1.5, 1.5, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7.5);
+    doc.setTextColor(SLATE_DARK[0], SLATE_DARK[1], SLATE_DARK[2]);
+    doc.text('DIAGNÓSTICO CONTÁBIL E PARECER TÉCNICO CONCLUSIVO', margin + 3, currentY + 4.5);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6.1);
+    doc.text(
+      '1. Caixa Sólido e Livre (R$ 210K): Encerramos agosto com R$ 281.045,94 em conta bancária e aplicações. Deste total, R$ 210.390,04 são recursos\n' +
+      '   totalmente desimpedidos, livres de dívidas e compromissos operacionais, assegurando mais de 4 meses de sobrevida mesmo com receita zero.\n' +
+      '2. Fundo de Reserva Resguardado: O saldo em caixa supera em muito a exigência legal e estatutária de Fundo de Reserva (R$ 19.564,62 já provisionados).\n' +
+      '3. Superávit Operacional Crônico: A arrecadação mensal supera com folga as despesas operacionais (receita chegou a dobrar despesas em vários meses).\n' +
+      '   A média móvel das sobras líquidas nos últimos 3 meses (Jun a Ago) atingiu expressivos + R$ 64.360,89 por mês.\n' +
+      '4. Quitação Integral das Máquinas: A taxa de R$ 1.545,90 incluía R$ 393,85/unidade destinados a pagar R$ 76.800,00 em máquinas e equipamentos.\n' +
+      '   O parcelamento foi 100% quitado em Julho/2026. Em Agosto a despesa foi R$ 0,00, liberando de imediato essa margem financeira dos condôminos.\n' +
+      '5. Cota Recomendada & Regramento Extraordinário: A taxa ordinária pode ser reduzida com folga e segurança contábil para R$ 965,00/mês.\n' +
+      '   Despesas de capital, reformas e novos bens duráveis devem ser custeados exclusivamente por taxas extras temporárias com aprovação assemblear.',
+      margin + 3,
+      currentY + 8.5
+    );
+
+    currentY += 37;
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.setTextColor(SLATE_DARK[0], SLATE_DARK[1], SLATE_DARK[2]);
+    doc.text('QUADRO COMPARATIVO SINTÉTICO: SITUAÇÃO ATUAL VS. PROPOSTA RECOMENDADA', margin, currentY);
+
+    const summaryRows = [
+      ['Taxa Condominial Ordinária (Unitária)', 'R$ 1.545,90 / mês', 'R$ 965,00 / mês', '- R$ 580,90 (-37,6%)', 'Alívio direto no boleto'],
+      ['Arrecadação Mensal (65 unidades)', 'R$ 100.483,50 / mês', 'R$ 62.725,00 / mês', '- R$ 37.758,50 / mês', 'Equilíbrio orçamentário'],
+      ['Economia Anual por Morador', 'R$ 0,00', 'R$ 6.970,80 / ano', '+ R$ 6.970,80 no bolso', 'Mais poder aquisitivo'],
+      ['Economia Anual Coletiva (65 unidades)', 'R$ 0,00', 'R$ 453.102,00 / ano', '+ R$ 453.102,00 retidos', 'Fim do acúmulo excessivo'],
+      ['Parcela de Máquinas (R$ 76,8K total)', 'Embutida (R$ 393,85/un)', 'R$ 0,00 (100% Quitada)', 'Custo extinto em Jul/26', 'Sem encargo de compra'],
+      ['Saldo de Caixa / Aplicações', 'R$ 281.045,94', 'Preservado (~R$ 210K livre)', '4,1 meses de sobrevida', 'Segurança total'],
+      ['Superávit Médio Recente (3M)', '+ R$ 64.360,89 / mês', 'Ajustado ao equilíbrio', 'Elimina sobras ociosas', 'Gestão eficiente']
+    ];
+
+    autoTable(doc, {
+      startY: currentY + 2,
+      head: [['Rubrica / Indicador Financeiro', 'Cenário Atual', 'Proposta Recomendada', 'Variação / Economia', 'Parecer Contábil']],
+      body: summaryRows,
+      theme: 'grid',
+      headStyles: { fillColor: [30, 58, 138], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 6.8 },
+      styles: { fontSize: 6.2, cellPadding: 1.5 },
+      columnStyles: {
+        0: { cellWidth: 54, fontStyle: 'bold' },
+        1: { cellWidth: 32, halign: 'right' },
+        2: { cellWidth: 32, halign: 'right', fontStyle: 'bold', textColor: [4, 120, 87] },
+        3: { cellWidth: 32, halign: 'right', fontStyle: 'bold' },
+        4: { cellWidth: 32 }
+      },
+      didParseCell: (data) => {
+        if (data.row.index === 0 || data.row.index === 2 || data.row.index === 3) {
+          data.cell.styles.fillColor = [240, 253, 244];
+        }
+      }
+    });
+
+    addSignatures((doc as any).lastAutoTable.finalY + 6);
+  };
+
   // 1. RENDER DASHBOARD TAB (Top 10 Custos e Receitas)
   const renderDashboardSection = (isFirstPage: boolean) => {
     if (!isFirstPage) doc.addPage();
-    addHeader('Relatório Executivo: Custos & Receitas', `10 Maiores Custos e 10 Maiores Receitas (${selectedFilterLabel})`);
+    addHeader('RELATÓRIO FINANCEIRO', 'Relatório Executivo: Custos & Receitas', `10 Maiores Custos e 10 Maiores Receitas (${selectedFilterLabel})`);
 
     drawKpiBoxes([
       { label: 'Total de Receitas', value: formatCurrency(grouping.totalRevenuesSum), sub: 'Arrecadação total do período', color: EMERALD_DARK },
@@ -332,7 +422,7 @@ export function generateExecutivePdf(
   // 2. RENDER INADIMPLENCIA TAB
   const renderInadimplenciaSection = (isFirstPage: boolean) => {
     if (!isFirstPage) doc.addPage();
-    addHeader('Auditoria de Inadimplência & Cobrança', 'Evolução da Inadimplência, Quitação da Construtora e Acordos');
+    addHeader('INADIMPLÊNCIA', 'Auditoria de Inadimplência & Cobrança', 'Evolução da Inadimplência, Quitação da Construtora e Acordos');
 
     drawKpiBoxes([
       { label: 'Inadimplência Atual', value: 'R$ 3.692,43', sub: 'Residual 3,2% (96,8% Adimplente)', color: EMERALD_DARK },
@@ -434,7 +524,7 @@ export function generateExecutivePdf(
   // 3. RENDER ANALISE 281K TAB
   const renderAnalise281kSection = (isFirstPage: boolean) => {
     if (!isFirstPage) doc.addPage();
-    addHeader('Auditoria e Parecer: R$ 281.045,94', 'Avaliação de Comprometimento, Destinação Legal e Disponibilidade');
+    addHeader('AUDITORIA R$ 281K', 'Auditoria e Disponibilidade do Saldo', 'Exame Pericial dos R$ 281.045,94 em Conta e Investimentos (Agosto/2026)');
 
     drawKpiBoxes([
       { label: 'Saldo Total em Conta', value: 'R$ 281.045,94', sub: 'Posição em 31/08/2026 (Controlar)', color: BLUE_HEADER },
@@ -539,7 +629,7 @@ export function generateExecutivePdf(
   // 4. RENDER PROPOSTA NOVA TAXA ORDINÁRIA
   const renderPropostaTaxaSection = (isFirstPage: boolean) => {
     if (!isFirstPage) doc.addPage();
-    addHeader('Parecer Contábil: Proposta de Nova Taxa Condominial Ordinária', 'Argumentação Técnica, Custo Operacional Auditado, Base de 65 Unidades e Redução da Cota (Silo 240)');
+    addHeader('PARECER CONTÁBIL', 'Proposta de Nova Taxa Condominial Ordinária', 'Argumentação Técnica, Custo Operacional Auditado (65 Unidades) e Redução da Cota (Silo 240)');
 
     drawKpiBoxes([
       { label: 'Taxa Atual (65 Unidades)', value: 'R$ 1.545,90', sub: 'Total: R$ 100.483,50/mês', color: ROSE_DARK },
@@ -662,7 +752,7 @@ export function generateExecutivePdf(
   // 5. RENDER TIMELINE TAB (Saldos Mensais e Médias Móveis)
   const renderTimelineSection = (isFirstPage: boolean) => {
     if (!isFirstPage) doc.addPage();
-    addHeader('Demonstrativo de Saldos Mensais', 'Evolução Cronológica dos Saldos, Diferenças e Média Móvel (3 Meses)');
+    addHeader('SALDOS MENSAIS', 'Demonstrativo de Saldos Mensais', 'Evolução Cronológica dos Saldos, Diferenças e Média Móvel (3 Meses)');
 
     drawKpiBoxes([
       { label: 'Saldo Atual (Ago/26)', value: 'R$ 281.045,94', sub: 'Pico de liquidez em conta', color: BLUE_HEADER },
@@ -750,7 +840,7 @@ export function generateExecutivePdf(
   // 5. RENDER DOCUMENTOS TAB
   const renderDocumentosSection = (isFirstPage: boolean) => {
     if (!isFirstPage) doc.addPage();
-    addHeader('Dossiê de Fontes e Documentos Auditados', 'Fichamento das Prestações de Contas e Balancetes Oficiais');
+    addHeader('FONTES AUDITADAS', 'Dossiê de Fontes e Documentos Auditados', 'Fichamento das Prestações de Contas e Balancetes Oficiais');
 
     let currentY = 42;
     const docsInfo = [
@@ -795,15 +885,18 @@ export function generateExecutivePdf(
 
   // ORCHESTRATE GENERATION ACCORDING TO SCOPE
   if (scope === 'all') {
-    renderDashboardSection(true);
-    renderInadimplenciaSection(false);
-    renderAnalise281kSection(false);
+    renderResumoExecutivoSection(true);
     renderPropostaTaxaSection(false);
+    renderAnalise281kSection(false);
+    renderDashboardSection(false);
+    renderInadimplenciaSection(false);
     renderTimelineSection(false);
     renderDocumentosSection(false);
   } else {
     // Current tab only
-    if (activeTab === 'dashboard') {
+    if (activeTab === 'resumoExecutivo') {
+      renderResumoExecutivoSection(true);
+    } else if (activeTab === 'dashboard') {
       renderDashboardSection(true);
     } else if (activeTab === 'inadimplencia') {
       renderInadimplenciaSection(true);

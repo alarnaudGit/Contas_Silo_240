@@ -614,7 +614,8 @@ const allRevenuesData: FinancialItem[] = [
 ];
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'inadimplencia' | 'analise281k' | 'propostaTaxa' | 'timeline' | 'documentos'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'resumoExecutivo' | 'dashboard' | 'inadimplencia' | 'analise281k' | 'propostaTaxa' | 'timeline' | 'documentos'>('resumoExecutivo');
+  const [copiedExecutiveSummary, setCopiedExecutiveSummary] = useState<boolean>(false);
   const [selectedMonthFilter, setSelectedMonthFilter] = useState<string>('todos');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [unitFilter, setUnitFilter] = useState<string>('all');
@@ -809,115 +810,196 @@ export default function App() {
     setTimeout(() => setCopiedProposalText(false), 3000);
   };
 
+  const handleCopyExecutiveSummary = () => {
+    let text = `*RESUMO EXECUTIVO: VIABILIDADE CONTÁBIL PARA REDUÇÃO DA TAXA CONDOMINIAL*\n`;
+    text += `*Condomínio do Edifício Moinho Silo 240 (65 Unidades)* • Emissão Oficial: 24/09/2026\n\n`;
+    text += `1. *Caixa Sólido e Livre:* Temos R$ 281.045,94 em conta/aplicações. Destes, R$ 210.390,04 (~R$ 210K) estão 100% livres de compromissos ou dívidas operacionais. Este valor ultrapassa em muito a exigência obrigatória de Fundo de Reserva (R$ 19.564,62 já provisionados).\n\n`;
+    text += `2. *Superávit Operacional Crônico:* A receita mensal chega a ser mais que o dobro das despesas correntes em vários períodos. A média móvel dos últimos 3 meses registrou sobra líquida de +R$ 64.360,89/mês.\n\n`;
+    text += `3. *Quitação Integral das Máquinas (R$ 76,8K):* A taxa atual de R$ 1.545,90 embutia R$ 393,85/unidade para pagamento das máquinas e equipamentos em 3 parcelas de R$ 25.600,00 (Mai, Jun e Jul). O custo foi 100% QUITADO em Julho/2026 e em Agosto a despesa foi R$ 0,00.\n\n`;
+    text += `4. *Nova Taxa Sugerida:* Dadas as despesas ordinárias reais auditadas (~R$ 69K/mês), podemos reduzir com folga e segurança a taxa ordinária para *R$ 965,00/mês* (-37,6%, economia de *R$ 6.970,80/ano por morador* e *R$ 453.102,00/ano no condomínio*).\n\n`;
+    text += `5. *Regramento Extraordinário:* Reformas, melhorias ou novos equipamentos duráveis devem ser cobertos por taxas extraordinárias temporárias apenas quando houver necessidade e aprovação assemblear, mantendo a taxa ordinária enxuta e justa.\n\n`;
+    text += `Fonte: Balancetes Oficiais Innova Housing & Controlar Condomínio Digital.`;
+
+    navigator.clipboard.writeText(text);
+    setCopiedExecutiveSummary(true);
+    setTimeout(() => setCopiedExecutiveSummary(false), 3000);
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       {/* Top Header Bar */}
-      <header className="bg-slate-900 border-b border-slate-800 text-white sticky top-0 z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+      <header className="bg-slate-900 border-b border-slate-800 text-white sticky top-0 z-50 shadow-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 space-y-2.5">
+          {/* Row 1: Brand & Global Actions */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-2">
             <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-white shadow-sm">
-                <Building2 className="w-5 h-5" />
+              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center font-bold text-white shadow-md ring-1 ring-white/10 shrink-0">
+                <Building2 className="w-5 h-5 text-white" />
               </div>
               <div>
-                <span className="text-base font-bold tracking-tight text-white block leading-tight">
-                  Moinho Silo 240
-                </span>
-                <span className="text-xs text-slate-400 block leading-tight">
-                  Painel de Auditoria & Prestação de Contas
+                <div className="flex items-center gap-2">
+                  <span className="text-base font-extrabold tracking-tight text-white leading-tight">
+                    Moinho Silo 240
+                  </span>
+                  <span className="text-[10px] font-mono font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-full">
+                    65 Unidades
+                  </span>
+                  <span className="hidden md:inline-flex text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+                    Auditado Ago/26
+                  </span>
+                </div>
+                <span className="text-xs text-slate-400 block leading-tight mt-0.5">
+                  Painel de Auditoria Contábil, Prestação de Contas & Proposta Orçamentária
                 </span>
               </div>
             </div>
 
-            {/* Navigation Tabs */}
-            <nav className="flex items-center gap-1.5 p-1 bg-slate-800/80 rounded-xl border border-slate-700/60 overflow-x-auto">
+            {/* Quick Actions Right */}
+            <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
               <button
-                onClick={() => setActiveTab('dashboard')}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap flex items-center gap-1.5 ${
-                  activeTab === 'dashboard'
-                    ? 'bg-blue-600 text-white shadow-sm'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
-                }`}
+                type="button"
+                onClick={handleCopyExecutiveSummary}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 transition-colors shadow-xs cursor-pointer"
+                title="Copiar texto síntese formatado para WhatsApp ou E-mail"
               >
-                <PieChart className="w-3.5 h-3.5" />
-                Top 10 Custos & Receitas
+                {copiedExecutiveSummary ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-emerald-300" />}
+                <span>{copiedExecutiveSummary ? 'Copiado p/ WhatsApp!' : 'Copiar Síntese'}</span>
               </button>
 
               <button
-                onClick={() => setActiveTab('inadimplencia')}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap flex items-center gap-1.5 ${
-                  activeTab === 'inadimplencia'
-                    ? 'bg-amber-600 text-white shadow-sm'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
-                }`}
-              >
-                <AlertTriangle className="w-3.5 h-3.5 text-amber-300" />
-                Inadimplência & Cobrança
-              </button>
-
-              <button
-                onClick={() => setActiveTab('analise281k')}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap flex items-center gap-1.5 ${
-                  activeTab === 'analise281k'
-                    ? 'bg-emerald-600 text-white shadow-sm'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
-                }`}
-              >
-                <ShieldCheck className="w-3.5 h-3.5" />
-                Auditoria R$ 281K
-              </button>
-
-              <button
-                onClick={() => setActiveTab('propostaTaxa')}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap flex items-center gap-1.5 ${
-                  activeTab === 'propostaTaxa'
-                    ? 'bg-indigo-600 text-white shadow-sm ring-1 ring-indigo-400'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
-                }`}
-              >
-                <Calculator className="w-3.5 h-3.5 text-indigo-300" />
-                <span>Nova Taxa Sugerida</span>
-                <span className="text-[10px] bg-emerald-500 text-slate-950 px-1.5 py-0.2 rounded-full font-bold">-37,6%</span>
-              </button>
-
-              <button
-                onClick={() => setActiveTab('timeline')}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap flex items-center gap-1.5 ${
-                  activeTab === 'timeline'
-                    ? 'bg-blue-600 text-white shadow-sm'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
-                }`}
-              >
-                <Clock className="w-3.5 h-3.5" />
-                Saldos Mensais
-              </button>
-
-              <button
-                onClick={() => setActiveTab('documentos')}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap flex items-center gap-1.5 ${
-                  activeTab === 'documentos'
-                    ? 'bg-blue-600 text-white shadow-sm'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
-                }`}
-              >
-                <FileCheck2 className="w-3.5 h-3.5" />
-                Fontes (PDFs)
-              </button>
-            </nav>
-
-            {/* Global PDF Export Button */}
-            <div className="flex items-center gap-2">
-              <button
+                type="button"
                 onClick={() => {
                   setPdfScope('current');
                   setShowPdfModal(true);
                 }}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-900 hover:bg-slate-100 shadow-sm transition-all cursor-pointer whitespace-nowrap"
-                title="Salvar esta visualização ou relatório completo em PDF"
+                title="Salvar esta visualização ou dossiê completo em PDF"
               >
                 <Printer className="w-3.5 h-3.5 text-blue-600" />
                 <span>Salvar em PDF</span>
               </button>
+            </div>
+          </div>
+
+          {/* Row 2: Categorized Navigation Tabs in Two Clean Lines */}
+          <div className="space-y-1.5">
+            {/* Linha 1: Parecer Orçamentário & Decisão */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-0.5 text-xs">
+              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider hidden sm:inline-block w-28 shrink-0">
+                Parecer & Cota:
+              </span>
+              <div className="flex items-center gap-1.5 bg-slate-800/90 p-1 rounded-xl border border-slate-700/60 shadow-inner shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('resumoExecutivo')}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+                    activeTab === 'resumoExecutivo'
+                      ? 'bg-blue-600 text-white shadow-md ring-1 ring-blue-400 font-bold'
+                      : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                  }`}
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                  <span>Resumo Executivo</span>
+                  <span className="text-[10px] bg-amber-400/20 text-amber-300 border border-amber-400/30 px-1.5 py-0.2 rounded-full font-bold">
+                    Síntese
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('propostaTaxa')}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+                    activeTab === 'propostaTaxa'
+                      ? 'bg-indigo-600 text-white shadow-md ring-1 ring-indigo-400 font-bold'
+                      : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                  }`}
+                >
+                  <Calculator className="w-3.5 h-3.5 text-indigo-300" />
+                  <span>Nova Taxa Sugerida</span>
+                  <span className="text-[10px] bg-emerald-500 text-slate-950 px-1.5 py-0.2 rounded-full font-bold">
+                    -37,6% (R$ 965)
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('analise281k')}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+                    activeTab === 'analise281k'
+                      ? 'bg-emerald-600 text-white shadow-md font-bold'
+                      : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                  }`}
+                >
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-300" />
+                  <span>Auditoria R$ 281K</span>
+                  <span className="text-[10px] bg-emerald-400/20 text-emerald-300 border border-emerald-400/30 px-1.5 py-0.2 rounded-full">
+                    R$ 210K Livre
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            {/* Linha 2: Balancetes & Demonstrativos Contábeis */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-0.5 text-xs">
+              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider hidden sm:inline-block w-28 shrink-0">
+                Demonstrativos:
+              </span>
+              <div className="flex items-center gap-1.5 bg-slate-800/60 p-1 rounded-xl border border-slate-700/40 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('dashboard')}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+                    activeTab === 'dashboard'
+                      ? 'bg-blue-600 text-white shadow-sm font-bold'
+                      : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                  }`}
+                >
+                  <PieChart className="w-3.5 h-3.5 text-blue-300" />
+                  <span>Top 10 Custos & Receitas</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('inadimplencia')}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+                    activeTab === 'inadimplencia'
+                      ? 'bg-amber-600 text-white shadow-sm font-bold'
+                      : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                  }`}
+                >
+                  <AlertTriangle className="w-3.5 h-3.5 text-amber-300" />
+                  <span>Inadimplência</span>
+                  <span className="text-[10px] bg-amber-400/20 text-amber-300 px-1.5 py-0.2 rounded-full">
+                    96,8% Adimplente
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('timeline')}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+                    activeTab === 'timeline'
+                      ? 'bg-blue-600 text-white shadow-sm font-bold'
+                      : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                  }`}
+                >
+                  <Clock className="w-3.5 h-3.5 text-blue-300" />
+                  <span>Saldos Mensais (3M)</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('documentos')}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+                    activeTab === 'documentos'
+                      ? 'bg-blue-600 text-white shadow-sm font-bold'
+                      : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                  }`}
+                >
+                  <FileCheck2 className="w-3.5 h-3.5 text-blue-300" />
+                  <span>Fontes (PDFs)</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -944,6 +1026,7 @@ export default function App() {
               <span className="font-bold text-slate-900 block">RELATÓRIO DE PRESTAÇÃO DE CONTAS</span>
               <span className="text-slate-500 block">Exercício 2026 • Emissão Oficial</span>
               <span className="text-blue-700 font-bold block uppercase mt-1">
+                {activeTab === 'resumoExecutivo' && 'Resumo Executivo: Viabilidade Contábil para Redução da Taxa Ordinária'}
                 {activeTab === 'dashboard' && 'Demonstrativo: 10 Maiores Custos & Receitas'}
                 {activeTab === 'inadimplencia' && 'Relatório de Inadimplência & Cobrança'}
                 {activeTab === 'analise281k' && 'Auditoria & Disponibilidade dos R$ 281K'}
@@ -994,15 +1077,17 @@ export default function App() {
               </div>
               <div className="flex flex-col gap-1.5 mt-2">
                 <button
+                  type="button"
                   onClick={() => setActiveTab('propostaTaxa')}
-                  className="w-full py-1.5 px-3 rounded-lg text-xs font-semibold bg-indigo-500 hover:bg-indigo-600 text-white transition-colors flex items-center justify-center gap-1.5 shadow-sm"
+                  className="w-full py-1.5 px-3 rounded-lg text-xs font-semibold bg-indigo-500 hover:bg-indigo-600 text-white transition-colors flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
                 >
                   <Calculator className="w-3.5 h-3.5" />
                   <span>Proposta Nova Taxa (-37,6%)</span>
                 </button>
                 <button
+                  type="button"
                   onClick={() => setActiveTab('analise281k')}
-                  className="w-full py-1.5 px-3 rounded-lg text-xs font-semibold bg-emerald-500 hover:bg-emerald-600 text-slate-950 transition-colors flex items-center justify-center gap-1"
+                  className="w-full py-1.5 px-3 rounded-lg text-xs font-semibold bg-emerald-500 hover:bg-emerald-600 text-slate-950 transition-colors flex items-center justify-center gap-1 cursor-pointer"
                 >
                   Auditoria dos R$ 281K <ChevronRight className="w-3.5 h-3.5" />
                 </button>
@@ -1010,6 +1095,354 @@ export default function App() {
             </div>
           </div>
         </section>
+
+        {/* Tab 0: Resumo Executivo Compacto & Síntese Oficial */}
+        {activeTab === 'resumoExecutivo' && (
+          <div className="space-y-8 animate-fadeIn">
+            {/* Hero Card da Síntese */}
+            <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl border border-indigo-900/50 space-y-6">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                <div className="space-y-3 max-w-3xl">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-bold tracking-wide">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                    <span>PARECER EXECUTIVO • REDUÇÃO DA TAXA CONDOMINIAL</span>
+                  </div>
+                  <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                    Viabilidade Contábil para Reduzir a Taxa de <span className="line-through text-slate-400">R$ 1.545,90</span> para{' '}
+                    <span className="text-emerald-400 underline decoration-emerald-400/40 font-mono">
+                      R$ 965,00/mês
+                    </span>
+                  </h2>
+                  <p className="text-sm text-slate-300 leading-relaxed">
+                    Com base nos balancetes oficiais das administradoras <strong>Innova Housing</strong> e <strong>Controlar Condomínio Digital</strong>, 
+                    o Condomínio Silo 240 possui ampla margem de segurança para desonerar os moradores em <strong>-37,6% (- R$ 580,90/mês)</strong>, 
+                    gerando economia anual de <strong>R$ 6.970,80 por apartamento</strong> e <strong>R$ 453.102,00 coletivos</strong> nas 65 unidades.
+                  </p>
+                </div>
+
+                <div className="flex flex-col sm:flex-row lg:flex-col gap-2.5 shrink-0">
+                  <button
+                    type="button"
+                    onClick={handleCopyExecutiveSummary}
+                    className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-slate-950 transition-all shadow-md cursor-pointer"
+                  >
+                    {copiedExecutiveSummary ? <Check className="w-4 h-4 text-slate-950" /> : <Copy className="w-4 h-4" />}
+                    <span>{copiedExecutiveSummary ? 'Copiado para WhatsApp!' : 'Copiar Síntese p/ WhatsApp'}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('propostaTaxa')}
+                    className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all cursor-pointer"
+                  >
+                    <Calculator className="w-4 h-4 text-indigo-300" />
+                    <span>Ver Simulador Detalhado</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPdfScope('current');
+                      setShowPdfModal(true);
+                    }}
+                    className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition-all shadow-sm cursor-pointer"
+                  >
+                    <Printer className="w-4 h-4" />
+                    <span>Exportar Parecer em PDF</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* 4 KPI Summary Cards */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 pt-6 border-t border-indigo-900/60 font-mono">
+                <div className="bg-white/5 p-4 rounded-2xl border border-white/10 space-y-1">
+                  <span className="text-[11px] text-slate-400 font-sans block">Taxa Atual Praticada</span>
+                  <span className="text-xl sm:text-2xl font-bold text-rose-400 block">R$ 1.545,90</span>
+                  <span className="text-[10px] text-slate-400 font-sans block">Total: R$ 100.483,50/mês (65 unid.)</span>
+                </div>
+
+                <div className="bg-emerald-500/10 p-4 rounded-2xl border border-emerald-500/30 space-y-1">
+                  <span className="text-[11px] text-emerald-300 font-sans block">Nova Taxa Sugerida</span>
+                  <span className="text-xl sm:text-2xl font-bold text-emerald-400 block">R$ 965,00</span>
+                  <span className="text-[10px] text-emerald-300 font-sans block">Redução de -37,6% (- R$ 580,90/mês)</span>
+                </div>
+
+                <div className="bg-blue-500/10 p-4 rounded-2xl border border-blue-500/30 space-y-1">
+                  <span className="text-[11px] text-blue-300 font-sans block">Economia Anual / Morador</span>
+                  <span className="text-xl sm:text-2xl font-bold text-blue-300 block">R$ 6.970,80</span>
+                  <span className="text-[10px] text-blue-200 font-sans block">Coletiva: R$ 453.102,00/ano</span>
+                </div>
+
+                <div className="bg-white/5 p-4 rounded-2xl border border-white/10 space-y-1">
+                  <span className="text-[11px] text-slate-400 font-sans block">Saldo em Caixa Total</span>
+                  <span className="text-xl sm:text-2xl font-bold text-white block">R$ 281.045,94</span>
+                  <span className="text-[10px] text-slate-400 font-sans block font-semibold text-emerald-400">R$ 210.390,04 livre (4,1 meses)</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 4 Pilares da Viabilidade Contábil */}
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3">
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <Scale className="w-5 h-5 text-indigo-600" />
+                    Fundamentação Contábil e Orçamentária da Redução
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    4 fatos contábeis auditados que comprovam a viabilidade imediata sem riscos de faltar caixa
+                  </p>
+                </div>
+                <span className="text-xs font-mono font-bold bg-slate-100 text-slate-700 px-3 py-1 rounded-full border border-slate-200 self-start sm:self-auto">
+                  Auditado: 65 Unidades
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Pilar 1 */}
+                <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3 hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold shrink-0">
+                      <ShieldCheck className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-900">1. Caixa Sólido com R$ 210K Livres</h4>
+                      <span className="text-[11px] text-emerald-700 font-semibold">Sem risco de liquidez</span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Temos <strong>R$ 281.045,94 em conta bancária e aplicações</strong>. Deste total, <strong>R$ 210.390,04 (~R$ 210K)</strong> estão 
+                    <strong> 100% livres e desimpedidos</strong> de compromissos operacionais ou dívidas bancárias. 
+                    Este valor <strong>ultrapassa em muito o valor obrigatório para Fundo de Reserva</strong> (que já possui R$ 19.564,62 resguardados). 
+                    Esse colchão assegura mais de 4 meses de sobrevida mesmo em cenário extremo de receita zero.
+                  </p>
+                  <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-[11px] text-emerald-950 font-medium">
+                    ✓ <strong>Rendimento Passivo:</strong> O saldo aplicado em CDI rende cerca de <strong>~R$ 2.500,00/mês</strong> em receitas financeiras passivas para o condomínio.
+                  </div>
+                </div>
+
+                {/* Pilar 2 */}
+                <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3 hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold shrink-0">
+                      <TrendingUp className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-900">2. Superávit Mensal Crônico (+R$ 64K/mês)</h4>
+                      <span className="text-[11px] text-indigo-700 font-semibold">Receitas duplicam despesas</span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    As contas mostram forte superávit mensal consecutivo, com receitas que chegaram a ser superiores ao dobro das despesas correntes em vários períodos. 
+                    A média móvel das sobras líquidas nos últimos 3 meses (Junho, Julho e Agosto/2026) atingiu expressivos 
+                    <strong> + R$ 64.360,89 por mês</strong>.
+                  </p>
+                  <div className="p-3 bg-indigo-50 rounded-xl border border-indigo-200 text-[11px] text-indigo-950 font-medium">
+                    ✓ <strong>Fim do Acúmulo Ocioso:</strong> Como entidade sem fins lucrativos, o condomínio não deve reter capital excessivo tirando o poder aquisitivo dos condôminos.
+                  </div>
+                </div>
+
+                {/* Pilar 3 */}
+                <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3 hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold shrink-0">
+                      <Receipt className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-900">3. Quitação Integral das Máquinas (R$ 76,8K)</h4>
+                      <span className="text-[11px] text-amber-800 font-semibold">Custo extinto em Julho/2026</span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    A taxa de R$ 1.545,90 embutia uma sobretaxa temporária de <strong>R$ 393,85/unidade</strong> para pagar a compra de 
+                    <strong> Máquinas e Equipamentos (R$ 76.800,00)</strong>, dividida em 3 parcelas de <strong>R$ 25.600,00</strong> (Maio, Junho e Julho/2026).
+                  </p>
+                  <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-[11px] text-amber-950 font-medium">
+                    ✓ <strong>Fato Contábil Concluído:</strong> Essas 3 parcelas foram <strong>100% quitadas em Julho</strong>. Em Agosto a despesa com máquinas foi <strong>R$ 0,00</strong>. Manter essa cobrança é enriquecimento sem causa.
+                  </div>
+                </div>
+
+                {/* Pilar 4 */}
+                <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3 hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold shrink-0">
+                      <Building2 className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-900">4. Custo Ordinário & Regra Extraordinária</h4>
+                      <span className="text-[11px] text-blue-700 font-semibold">Custeio real de R$ 69K/mês</span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    As despesas ordinárias reais do Silo 240 (Fênix Portaria/Limpeza, Síndico, Neoenergia, Elevadores, Seguro Predial, Controlar/Gruvi e Manutenção) somam 
+                    <strong> R$ 69.015,76/mês (R$ 1.061,78/unid.)</strong>. Fixando a taxa em <strong>R$ 965,00</strong>, a arrecadação mensal será de R$ 62.725,00, 
+                    perfeitamente respaldada pelos rendimentos do caixa e amortização do saldo retido.
+                  </p>
+                  <div className="p-3 bg-blue-50 rounded-xl border border-blue-200 text-[11px] text-blue-950 font-medium">
+                    ✓ <strong>Regramento Estrito:</strong> Despesas extraordinárias (compra de equipamentos futuros, reformas de fachada ou obras) <strong>DEVEM ser suportadas exclusivamente por taxas extras temporárias</strong> deliberadas em assembleia.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Quadro Comparativo Sintético: Antes vs Proposto */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                <div>
+                  <h3 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <Scale className="w-5 h-5 text-indigo-600" />
+                    Quadro Comparativo Sintético: Situação Atual vs. Proposta Sugerida
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Demonstrativo consolidado de impacto financeiro por unidade e no condomínio como um todo
+                  </p>
+                </div>
+                <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-1.5 self-start sm:self-auto font-mono">
+                  Economia Coletiva: R$ 453.102,00/ano
+                </span>
+              </div>
+
+              <div className="overflow-x-auto border border-slate-200 rounded-xl">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-900 text-white font-semibold">
+                    <tr>
+                      <th className="p-3">Indicador / Rubrica Orçamentária</th>
+                      <th className="p-3 text-right">Situação Atual</th>
+                      <th className="p-3 text-right bg-emerald-900/60 text-emerald-200 font-bold">Proposta Sugerida</th>
+                      <th className="p-3 text-right">Variação / Economia</th>
+                      <th className="p-3">Parecer Contábil</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 text-slate-700">
+                    <tr className="hover:bg-slate-50 bg-emerald-50/30">
+                      <td className="p-3 font-bold text-slate-900 flex items-center gap-1.5">
+                        <Coins className="w-4 h-4 text-emerald-600" />
+                        Taxa Condominial Ordinária (Unitária)
+                      </td>
+                      <td className="p-3 text-right font-mono font-bold text-rose-600">R$ 1.545,90 / mês</td>
+                      <td className="p-3 text-right font-mono font-bold text-emerald-700 bg-emerald-50">R$ 965,00 / mês</td>
+                      <td className="p-3 text-right font-mono font-bold text-emerald-700">- R$ 580,90 (- 37,6%)</td>
+                      <td className="p-3 text-xs text-slate-600">Alívio imediato no orçamento dos condôminos</td>
+                    </tr>
+
+                    <tr className="hover:bg-slate-50">
+                      <td className="p-3 font-semibold text-slate-900">Arrecadação Mensal das 65 Unidades</td>
+                      <td className="p-3 text-right font-mono font-bold text-slate-800">R$ 100.483,50 / mês</td>
+                      <td className="p-3 text-right font-mono font-bold text-slate-900 bg-slate-50">R$ 62.725,00 / mês</td>
+                      <td className="p-3 text-right font-mono font-bold text-slate-700">- R$ 37.758,50 / mês</td>
+                      <td className="p-3 text-xs text-slate-600">Equilíbrio orçamentário real do Silo 240</td>
+                    </tr>
+
+                    <tr className="hover:bg-slate-50 bg-emerald-50/20">
+                      <td className="p-3 font-bold text-emerald-900">Economia Anual por Morador</td>
+                      <td className="p-3 text-right font-mono text-slate-400">R$ 0,00</td>
+                      <td className="p-3 text-right font-mono font-bold text-emerald-700 bg-emerald-50">+ R$ 6.970,80 / ano</td>
+                      <td className="p-3 text-right font-mono font-bold text-emerald-700">+ R$ 6.970,80 / ano</td>
+                      <td className="p-3 text-xs text-emerald-800 font-medium">Equivale a mais de 7 cotas inteiras economizadas</td>
+                    </tr>
+
+                    <tr className="hover:bg-slate-50 bg-emerald-50/20">
+                      <td className="p-3 font-bold text-emerald-900">Economia Anual Coletiva (65 Unidades)</td>
+                      <td className="p-3 text-right font-mono text-slate-400">R$ 0,00</td>
+                      <td className="p-3 text-right font-mono font-bold text-emerald-700 bg-emerald-50">+ R$ 453.102,00 / ano</td>
+                      <td className="p-3 text-right font-mono font-bold text-emerald-700">+ R$ 453.102,00 / ano</td>
+                      <td className="p-3 text-xs text-emerald-800 font-medium">Fim do acúmulo desnecessário de caixa retido</td>
+                    </tr>
+
+                    <tr className="hover:bg-slate-50">
+                      <td className="p-3 font-medium text-slate-800">Parcela de Máquinas e Equipamentos (R$ 76,8K)</td>
+                      <td className="p-3 text-right font-mono text-rose-600">Embutida (R$ 393,85/un)</td>
+                      <td className="p-3 text-right font-mono font-bold text-emerald-700 bg-slate-50">R$ 0,00 (100% Quitada)</td>
+                      <td className="p-3 text-right font-mono text-emerald-700">- R$ 393,85/un</td>
+                      <td className="p-3 text-xs text-slate-600">Custo encerrado em Julho/2026; não deve mais ser cobrado</td>
+                    </tr>
+
+                    <tr className="hover:bg-slate-50">
+                      <td className="p-3 font-medium text-slate-800">Saldo em Conta e Aplicações</td>
+                      <td className="p-3 text-right font-mono font-bold text-blue-700">R$ 281.045,94</td>
+                      <td className="p-3 text-right font-mono font-bold text-blue-700 bg-slate-50">Preservado (~R$ 210K livre)</td>
+                      <td className="p-3 text-right font-mono text-slate-600">Total Segurança</td>
+                      <td className="p-3 text-xs text-slate-600">4,1 meses de sobrevida total (ampla margem)</td>
+                    </tr>
+
+                    <tr className="hover:bg-slate-50">
+                      <td className="p-3 font-medium text-slate-800">Superávit Mensal Recente (Média 3M)</td>
+                      <td className="p-3 text-right font-mono font-bold text-amber-600">+ R$ 64.360,89 / mês</td>
+                      <td className="p-3 text-right font-mono text-slate-700 bg-slate-50">Ajustado ao equilíbrio</td>
+                      <td className="p-3 text-right font-mono text-slate-600">Sustentável</td>
+                      <td className="p-3 text-xs text-slate-600">Elimina sobras ociosas sem gerar déficit perigoso</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Card com Texto Formatado para WhatsApp e E-mail */}
+            <div className="bg-slate-900 rounded-2xl p-6 sm:p-7 text-white shadow-md border border-slate-800 space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="h-8 w-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+                    <FileText className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-white">Texto Formatado Pronto para WhatsApp / E-mail</h4>
+                    <span className="text-[11px] text-slate-400">Ideal para compartilhar nos grupos de proprietários e protocolar junto ao síndico</span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleCopyExecutiveSummary}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-slate-950 transition-colors shadow-sm cursor-pointer self-start sm:self-auto"
+                >
+                  {copiedExecutiveSummary ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>{copiedExecutiveSummary ? 'Copiado!' : 'Copiar Texto'}</span>
+                </button>
+              </div>
+
+              <div className="p-4 bg-slate-950/80 rounded-xl border border-slate-800 text-slate-300 font-mono text-xs leading-relaxed whitespace-pre-wrap select-all max-h-72 overflow-y-auto">
+{`RESUMO EXECUTIVO: VIABILIDADE CONTÁBIL PARA REDUÇÃO DA TAXA CONDOMINIAL
+Condomínio do Edifício Moinho Silo 240 (65 Unidades) • Emissão Oficial: 24/09/2026
+
+1. Caixa Sólido e Livre: Temos R$ 281.045,94 em conta/aplicações. Destes, R$ 210.390,04 (~R$ 210K) estão 100% livres de compromissos ou dívidas operacionais. Este valor ultrapassa em muito a exigência obrigatória de Fundo de Reserva (R$ 19.564,62 já provisionados).
+
+2. Superávit Operacional Crônico: A receita mensal chega a ser mais que o dobro das despesas correntes em vários períodos. A média móvel dos últimos 3 meses registrou sobra líquida de +R$ 64.360,89/mês.
+
+3. Quitação Integral das Máquinas (R$ 76,8K): A taxa atual de R$ 1.545,90 embutia R$ 393,85/unidade para pagamento das máquinas e equipamentos em 3 parcelas de R$ 25.600,00 (Mai, Jun e Jul). O custo foi 100% QUITADO em Julho/2026 e em Agosto a despesa foi R$ 0,00.
+
+4. Nova Taxa Sugerida: Dadas as despesas ordinárias reais auditadas (~R$ 69K/mês), podemos reduzir com folga e segurança a taxa ordinária para R$ 965,00/mês (-37,6%, economia de R$ 6.970,80/ano por morador e R$ 453.102,00/ano no condomínio).
+
+5. Regramento Extraordinário: Reformas, melhorias ou novos equipamentos duráveis devem ser cobertos por taxas extraordinárias temporárias apenas quando houver necessidade e aprovação assemblear, mantendo a taxa ordinária enxuta e justa.
+
+Fonte: Balancetes Oficiais Innova Housing & Controlar Condomínio Digital.`}
+              </div>
+            </div>
+
+            {/* Quick Navigation Footer */}
+            <div className="p-5 rounded-2xl bg-indigo-50 border border-indigo-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <span className="text-xs font-bold text-indigo-900 block flex items-center gap-1.5">
+                  <Calculator className="w-4 h-4 text-indigo-600" />
+                  Deseja testar outros valores ou ver o simulador dinâmico?
+                </span>
+                <p className="text-xs text-indigo-700">
+                  Acesse a guia <strong>"Nova Taxa Sugerida"</strong> para ajustar o número de unidades, alterar o fundo de reserva e comparar os 3 cenários orçamentários.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('propostaTaxa')}
+                  className="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white transition-colors flex items-center gap-1.5 shadow-sm cursor-pointer"
+                >
+                  <span>Abrir Simulador Dinâmico</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Tab 1: Dashboard with Top 10 Expenses & Revenues */}
         {activeTab === 'dashboard' && (
@@ -3581,6 +4014,39 @@ Subscrito por: Condôminos e Proprietários do Complexo Multiuso Moinho Recife -
                         <span className="text-[10px] text-indigo-600 font-medium">R$ 0,00 Dívidas</span>
                       </div>
                     </div>
+
+                    {/* Section 0: Síntese Executiva */}
+                    {(pdfScope === 'all' || activeTab === 'resumoExecutivo') && (
+                      <div className="p-4 bg-emerald-50/70 border border-emerald-200 rounded-xl space-y-2 text-xs">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1.5 font-bold text-emerald-950">
+                            <Sparkles className="w-4 h-4 text-emerald-600" />
+                            Síntese Executiva: Viabilidade para Redução da Taxa para R$ 965,00/mês
+                          </div>
+                          <span className="text-[10px] font-mono font-bold bg-emerald-200/80 text-emerald-900 px-2 py-0.5 rounded">
+                            -37,6% (Economia R$ 6.970,80/ano)
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px] text-slate-700 pt-1">
+                          <div>
+                            <strong className="text-slate-900 block">• Caixa Desimpedido:</strong>
+                            R$ 281.045,94 em conta, sendo R$ 210.390,04 totalmente livres (4,1 meses de sobrevida), muito acima da reserva legal obrigatória.
+                          </div>
+                          <div>
+                            <strong className="text-slate-900 block">• Fim das Máquinas:</strong>
+                            R$ 76.800,00 100% quitados em Julho/2026. Parcela de R$ 393,85/unidade eliminada em definitivo.
+                          </div>
+                          <div>
+                            <strong className="text-slate-900 block">• Superávit Crônico:</strong>
+                            Média móvel líquida de +R$ 64.360,89/mês nos últimos 3 meses (receita chegou ao dobro do custeio).
+                          </div>
+                          <div>
+                            <strong className="text-slate-900 block">• Regramento Extraordinário:</strong>
+                            Novos equipamentos e reformas devem ser suportados apenas por taxas extras temporárias aprovadas em assembleia.
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                     {/* Section 1: Saldos Mensais e Diferenças */}
                     {(pdfScope === 'all' || activeTab === 'timeline') && (
