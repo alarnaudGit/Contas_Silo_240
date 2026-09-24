@@ -29,7 +29,15 @@ import {
   Copy,
   ExternalLink,
   FileText,
-  Eye
+  Eye,
+  Calculator,
+  Percent,
+  Scale,
+  Receipt,
+  Coins,
+  Sparkles,
+  Sliders,
+  Users
 } from 'lucide-react';
 
 interface MovingAverageComponent {
@@ -38,6 +46,145 @@ interface MovingAverageComponent {
   despesas: number;
   diferenca: number;
 }
+
+export interface OrdinaryExpenseItem {
+  id: string;
+  name: string;
+  category: string;
+  monthlyAverage: number;
+  annualTotal: number;
+  basis: string;
+  essentiality: 'Obrigatório' | 'Contratual' | 'Operacional' | 'Concessionária';
+}
+
+export const ordinaryExpensesBenchmark: OrdinaryExpenseItem[] = [
+  {
+    id: 'ord-portaria',
+    name: 'Mão de Obra Terceirizada (Portaria 24h & Limpeza)',
+    category: 'Terceirização',
+    monthlyAverage: 37000.00,
+    annualTotal: 444000.00,
+    basis: 'Contrato Fênix Terceirizações (NFs auditadas de Jan a Ago)',
+    essentiality: 'Contratual'
+  },
+  {
+    id: 'ord-sindico',
+    name: 'Pró-Labore do Síndico Profissional',
+    category: 'Administração',
+    monthlyAverage: 5891.92,
+    annualTotal: 70703.04,
+    basis: 'Remuneração fixada em Assembleia Geral de Instalação (RPA mensal)',
+    essentiality: 'Obrigatório'
+  },
+  {
+    id: 'ord-concessionaria-energia',
+    name: 'Neoenergia - Energia Elétrica (Áreas Comuns, Gerador & Bombas)',
+    category: 'Concessionárias',
+    monthlyAverage: 5200.00,
+    annualTotal: 62400.00,
+    basis: 'Média de faturamento das áreas comuns (hall, garagens, elevadores)',
+    essentiality: 'Concessionária'
+  },
+  {
+    id: 'ord-elevadores',
+    name: 'Manutenção Preventiva e Assistência Técnica dos Elevadores',
+    category: 'Manutenção',
+    monthlyAverage: 1862.19,
+    annualTotal: 22346.28,
+    basis: 'Contrato fixo mensal com empresa homologada de transporte vertical',
+    essentiality: 'Obrigatório'
+  },
+  {
+    id: 'ord-controlar',
+    name: 'Taxa de Administração Imobiliária (Controlar / Gruvi)',
+    category: 'Administração',
+    monthlyAverage: 1620.00,
+    annualTotal: 19440.00,
+    basis: 'Honorários de administração condominial e suporte digital Gruvi',
+    essentiality: 'Contratual'
+  },
+  {
+    id: 'ord-seguro',
+    name: 'Seguro Predial Obrigatório Contra Incêndio e Riscos Diversos',
+    category: 'Obrigatórias',
+    monthlyAverage: 1174.53,
+    annualTotal: 14094.36,
+    basis: 'Apólice regulamentar de seguro condominial (parcelamento mensal)',
+    essentiality: 'Obrigatório'
+  },
+  {
+    id: 'ord-tributos',
+    name: 'Tributos Federais e Retenções Patronais (INSS, ISS, IR, PIS/COFINS)',
+    category: 'Tributos',
+    monthlyAverage: 2800.00,
+    annualTotal: 33600.00,
+    basis: 'DARF Previdenciário, retenções sobre NF de terceiros e pró-labore',
+    essentiality: 'Obrigatório'
+  },
+  {
+    id: 'ord-limpeza',
+    name: 'Materiais de Limpeza, Higiene, Sacos e Produtos Químicos',
+    category: 'Materiais',
+    monthlyAverage: 2500.00,
+    annualTotal: 30000.00,
+    basis: 'Insumos de consumo contínuo para as dependências sociais e circulação',
+    essentiality: 'Operacional'
+  },
+  {
+    id: 'ord-internet-ti',
+    name: 'Link Dedicado de Internet, Telefonia & Licença Gruvi',
+    category: 'Telecom & TI',
+    monthlyAverage: 1650.00,
+    annualTotal: 19800.00,
+    basis: 'Conexão para portaria, controle de acesso e automação predial',
+    essentiality: 'Operacional'
+  },
+  {
+    id: 'ord-gas-agua',
+    name: 'Concessionárias (Gás Canalizado e Água de Áreas Comuns)',
+    category: 'Concessionárias',
+    monthlyAverage: 1200.00,
+    annualTotal: 14400.00,
+    basis: 'Custo rateado das áreas comuns e reservatórios',
+    essentiality: 'Concessionária'
+  },
+  {
+    id: 'ord-juridico',
+    name: 'Assessoria Jurídica e Suporte em Cobrança Contratada',
+    category: 'Jurídico',
+    monthlyAverage: 1167.12,
+    annualTotal: 14005.44,
+    basis: 'Honorários advocatícios para gestão de inadimplência e contratos',
+    essentiality: 'Contratual'
+  },
+  {
+    id: 'ord-acesso-cftv',
+    name: 'Manutenção do Sistema de Controle de Acesso e CFTV',
+    category: 'Segurança',
+    monthlyAverage: 1050.00,
+    annualTotal: 12600.00,
+    basis: 'Manutenção preventiva e corretiva de catracas, leitores e câmeras',
+    essentiality: 'Operacional'
+  },
+  {
+    id: 'ord-reparos',
+    name: 'Pequenos Reparos Prediais, Elétricos e Hidráulicos de Rotina',
+    category: 'Manutenção',
+    monthlyAverage: 1500.00,
+    annualTotal: 18000.00,
+    basis: 'Troca de lâmpadas, reparos em portas, fechaduras e válvulas',
+    essentiality: 'Operacional'
+  },
+  {
+    id: 'ord-bancarias',
+    name: 'Tarifas Bancárias e Custas de Liquidação de Boletos PJ',
+    category: 'Financeiras',
+    monthlyAverage: 400.00,
+    annualTotal: 4800.00,
+    basis: 'Tarifas operacionais da conta corrente própria no Itaú',
+    essentiality: 'Operacional'
+  }
+];
 
 // Monthly timeline data from the reports
 export interface MonthSummary {
@@ -467,7 +614,7 @@ const allRevenuesData: FinancialItem[] = [
 ];
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'inadimplencia' | 'analise281k' | 'timeline' | 'documentos'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'inadimplencia' | 'analise281k' | 'propostaTaxa' | 'timeline' | 'documentos'>('dashboard');
   const [selectedMonthFilter, setSelectedMonthFilter] = useState<string>('todos');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [unitFilter, setUnitFilter] = useState<string>('all');
@@ -480,6 +627,13 @@ export default function App() {
   const [generatedPdfFileName, setGeneratedPdfFileName] = useState<string | null>(null);
   const [copiedSummary, setCopiedSummary] = useState<boolean>(false);
   const [pdfActiveView, setPdfActiveView] = useState<'preview' | 'doc' | 'texto'>('preview');
+
+  // Interactive Fee Simulation States
+  const [simulatedTaxa, setSimulatedTaxa] = useState<number>(965);
+  const [simulatedUnits, setSimulatedUnits] = useState<number>(65);
+  const [fundoReservaPercent, setFundoReservaPercent] = useState<number>(10);
+  const [selectedScenario, setSelectedScenario] = useState<'recomendado' | 'economico' | 'conservador'>('recomendado');
+  const [copiedProposalText, setCopiedProposalText] = useState<boolean>(false);
 
   // Filter expenses according to selection
   const filteredExpenses = useMemo(() => {
@@ -618,6 +772,43 @@ export default function App() {
     setTimeout(() => setCopiedSummary(false), 3000);
   };
 
+  const handleCopyProposal = () => {
+    const units = simulatedUnits || 65;
+    const currentTotal = units * 1545.90;
+    const newTotal = units * simulatedTaxa;
+    const monthlyDiff = 1545.90 - simulatedTaxa;
+    const annualDiff = monthlyDiff * 12;
+    const collectiveAnnualSavings = (currentTotal - newTotal) * 12;
+
+    let text = `PARECER TÉCNICO & PROPOSTA CONTÁBIL DE REDUÇÃO DA TAXA CONDOMINIAL ORDINÁRIA\n`;
+    text += `CONDOMÍNIO DO EDIFÍCIO MOINHO SILO 240 • RECIFE-PE\n`;
+    text += `Data: 24/09/2026 • Base: Exercício 2026 (Auditoria das Administradoras Innova & Controlar)\n\n`;
+    text += `1. DIAGNÓSTICO ORÇAMENTÁRIO & DADOS ATUAIS:\n`;
+    text += `• Número de Unidades do Condomínio: ${units} unidades autônomas\n`;
+    text += `• Taxa Atual Praticada por Unidade: R$ 1.545,90 / mês (Arrecadação Total: R$ ${currentTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mês)\n`;
+    text += `• Nova Taxa Recomendada por Unidade: R$ ${simulatedTaxa.toFixed(2).replace('.', ',')} / mês (Nova Arrecadação: R$ ${newTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mês)\n`;
+    text += `• Economia Mensal por Morador: - R$ ${monthlyDiff.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} / mês (- ${((monthlyDiff / 1545.90) * 100).toFixed(1)}%)\n`;
+    text += `• Economia Anual por Morador: R$ ${annualDiff.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} / ano\n`;
+    text += `• Economia Anual Coletiva no Condomínio: R$ ${collectiveAnnualSavings.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} / ano\n`;
+    text += `• Saldo Acumulado em Caixa/Aplicações (31/08/2026): R$ 281.045,94 (sendo R$ 210.390,04 em capital de giro livre)\n`;
+    text += `• Superávit Mensal Operacional Recente: + R$ 64.360,89 / mês (Média Móvel dos últimos 3 meses: Jun, Jul e Ago)\n\n`;
+    text += `2. ARGUMENTAÇÃO CONTÁBIL E LEGAL:\n`;
+    text += `a) Custeio Ordinário Real Auditado: As despesas operacionais rotineiras do Silo 240 (Portaria 24h Fênix, Limpeza, Síndico, Elevadores, Neoenergia, Seguro Predial, Controlar/Gruvi, Tributos e Reparos) somam R$ 69.015,76/mês, o que equivale a R$ ${(69015.76 / units).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} por unidade.\n`;
+    text += `b) Provisão de Fundo de Reserva Legal (10%): Adiciona R$ 6.901,58/mês (R$ ${(6901.58 / units).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} por unidade), totalizando um orçamento ordinário de R$ 75.917,34/mês (R$ ${(75917.34 / units).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/unidade).\n`;
+    text += `c) Quitação Integral dos Bens de Capital (Máquinas): A taxa anterior de R$ 1.545,90 embutia a compra de Máquinas e Equipamentos de R$ 76.800,00 (3x R$ 25.600,00 em Mai, Jun e Jul), que pesava R$ ${(25600 / units).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} por unidade/mês. Como foi 100% quitada em Julho/2026, esse valor não pode mais ser cobrado.\n`;
+    text += `d) Saldo Excessivo de R$ 281 Mil: O caixa de R$ 281.045,94 cobre 4,1 meses de operação integral (o dobro do teto prudencial de 2 meses = R$ 140k). O rendimento em CDI desse saldo gera cerca de R$ 2.500,00/mês de receita financeira passiva para o condomínio.\n`;
+    text += `e) Regramento Imperativo de Despesas Extraordinárias: Fica vedado embutir bens duráveis, melhorias ou equipamentos na taxa ordinária. Quaisquer futuras aquisições deverão ser submetidas à Assembleia Geral com 3 orçamentos, aprovadas como Taxa Extraordinária Temporária com parcelamento fixo e encerramento automático após a quitação (resguardando locadores e inquilinos nos termos da Lei nº 8.245/91).\n\n`;
+    text += `3. CENÁRIOS SUBMETIDOS À ASSEMBLEIA GERAL:\n`;
+    text += `• Cenário Recomendado: R$ 965,00/mês (-37,6% • Economia: R$ 6.970,80/ano por morador)\n`;
+    text += `• Cenário Custeio Estrito: R$ 850,00/mês (-45,0% • Economia: R$ 8.350,80/ano por morador)\n`;
+    text += `• Cenário Conservador: R$ 1.150,00/mês (-25,6% • Economia: R$ 4.750,80/ano por morador)\n\n`;
+    text += `Subscrito por: Condôminos e Proprietários do Moinho Silo 240.`;
+
+    navigator.clipboard.writeText(text);
+    setCopiedProposalText(true);
+    setTimeout(() => setCopiedProposalText(false), 3000);
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       {/* Top Header Bar */}
@@ -674,6 +865,19 @@ export default function App() {
               >
                 <ShieldCheck className="w-3.5 h-3.5" />
                 Auditoria R$ 281K
+              </button>
+
+              <button
+                onClick={() => setActiveTab('propostaTaxa')}
+                className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap flex items-center gap-1.5 ${
+                  activeTab === 'propostaTaxa'
+                    ? 'bg-indigo-600 text-white shadow-sm ring-1 ring-indigo-400'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                }`}
+              >
+                <Calculator className="w-3.5 h-3.5 text-indigo-300" />
+                <span>Nova Taxa Sugerida</span>
+                <span className="text-[10px] bg-emerald-500 text-slate-950 px-1.5 py-0.2 rounded-full font-bold">-37,6%</span>
               </button>
 
               <button
@@ -743,6 +947,7 @@ export default function App() {
                 {activeTab === 'dashboard' && 'Demonstrativo: 10 Maiores Custos & Receitas'}
                 {activeTab === 'inadimplencia' && 'Relatório de Inadimplência & Cobrança'}
                 {activeTab === 'analise281k' && 'Auditoria & Disponibilidade dos R$ 281K'}
+                {activeTab === 'propostaTaxa' && 'Parecer Contábil: Proposta de Nova Taxa Condominial Ordinária'}
                 {activeTab === 'timeline' && 'Saldos Mensais, Diferenças & Média Móvel'}
                 {activeTab === 'documentos' && 'Fontes Documentais e Processos'}
               </span>
@@ -787,12 +992,21 @@ export default function App() {
                   <span className="font-mono font-bold text-emerald-400">R$ 0,00</span>
                 </div>
               </div>
-              <button
-                onClick={() => setActiveTab('analise281k')}
-                className="w-full mt-2 py-1.5 px-3 rounded-lg text-xs font-semibold bg-emerald-500 hover:bg-emerald-600 text-slate-950 transition-colors flex items-center justify-center gap-1"
-              >
-                Ver Detalhes do Parecer <ChevronRight className="w-3.5 h-3.5" />
-              </button>
+              <div className="flex flex-col gap-1.5 mt-2">
+                <button
+                  onClick={() => setActiveTab('propostaTaxa')}
+                  className="w-full py-1.5 px-3 rounded-lg text-xs font-semibold bg-indigo-500 hover:bg-indigo-600 text-white transition-colors flex items-center justify-center gap-1.5 shadow-sm"
+                >
+                  <Calculator className="w-3.5 h-3.5" />
+                  <span>Proposta Nova Taxa (-37,6%)</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab('analise281k')}
+                  className="w-full py-1.5 px-3 rounded-lg text-xs font-semibold bg-emerald-500 hover:bg-emerald-600 text-slate-950 transition-colors flex items-center justify-center gap-1"
+                >
+                  Auditoria dos R$ 281K <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
           </div>
         </section>
@@ -1835,7 +2049,710 @@ export default function App() {
           </div>
         )}
 
-        {/* Tab 3: Detailed Monthly Balances Timeline */}
+        {/* Tab: Proposta de Nova Taxa Condominial Ordinária */}
+        {activeTab === 'propostaTaxa' && (
+          <div className="space-y-8">
+            {/* Header Hero Banner with Savings Highlights */}
+            <div className="bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-950 rounded-2xl p-6 sm:p-8 text-white shadow-lg border border-indigo-800/60">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                <div className="space-y-3 max-w-3xl">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 flex items-center gap-1.5">
+                      <Scale className="w-3.5 h-3.5" />
+                      ESTUDO DE REVISÃO ORÇAMENTÁRIA • SILO 240
+                    </span>
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                      PARECER PARA ASSEMBLEIA
+                    </span>
+                  </div>
+                  <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-tight">
+                    Proposta Contábil de Redução da Taxa Ordinária
+                  </h2>
+                  <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+                    Atualmente pagamos <strong className="text-rose-400 font-mono">R$ 1.545,90 / mês</strong>. 
+                    A auditoria comprova que as contas acumularam <strong className="text-white">R$ 281.045,94 em saldo</strong>, 
+                    com superávit médio de <strong className="text-emerald-400 font-mono">+ R$ 64.360,89 / mês</strong>. 
+                    A compra de máquinas de R$ 76.800,00 <strong>já foi 100% quitada</strong>. 
+                    Propõe-se a redução da cota ordinária para <strong className="text-emerald-400 font-mono">R$ 965,00 / mês</strong> 
+                    (economia de <strong className="text-emerald-400">- 37,6%</strong> ou <strong className="text-emerald-400">R$ 6.970,80 / ano</strong> por morador).
+                  </p>
+                </div>
+
+                <div className="flex flex-col sm:flex-row lg:flex-col gap-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={handleCopyProposal}
+                    className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-md transition-all cursor-pointer"
+                  >
+                    {copiedProposalText ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                    <span>{copiedProposalText ? 'Parecer Copiado!' : 'Copiar Minuta de Parecer'}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPdfScope('current');
+                      setShowPdfModal(true);
+                    }}
+                    className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-white text-slate-900 hover:bg-slate-100 shadow-sm transition-all cursor-pointer"
+                  >
+                    <Printer className="w-4 h-4 text-indigo-600" />
+                    <span>Salvar Parecer em PDF</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* KPI Boxes Row */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-6 pt-6 border-t border-indigo-900/60 font-mono">
+                <div className="bg-white/5 p-3.5 rounded-xl border border-white/10">
+                  <span className="text-[11px] text-slate-400 font-sans block">Taxa Atual Praticada</span>
+                  <span className="text-xl sm:text-2xl font-bold text-rose-400 block mt-0.5">R$ 1.545,90</span>
+                  <span className="text-[10px] text-slate-400 font-sans block">Cota de referência por unidade/mês</span>
+                </div>
+
+                <div className="bg-emerald-500/10 p-3.5 rounded-xl border border-emerald-500/30">
+                  <span className="text-[11px] text-emerald-300 font-sans block">Nova Taxa Recomendada</span>
+                  <span className="text-xl sm:text-2xl font-bold text-emerald-400 block mt-0.5">R$ 965,00</span>
+                  <span className="text-[10px] text-emerald-300 font-sans block">Redução de - 37,6% (- R$ 580,90/mês)</span>
+                </div>
+
+                <div className="bg-white/5 p-3.5 rounded-xl border border-white/10">
+                  <span className="text-[11px] text-slate-400 font-sans block">Economia Anual / Unidade</span>
+                  <span className="text-xl sm:text-2xl font-bold text-emerald-300 block mt-0.5">R$ 6.970,80</span>
+                  <span className="text-[10px] text-slate-400 font-sans block">Alívio direto no orçamento familiar</span>
+                </div>
+
+                <div className="bg-white/5 p-3.5 rounded-xl border border-white/10">
+                  <span className="text-[11px] text-slate-400 font-sans block">Saldo Livre em Caixa</span>
+                  <span className="text-xl sm:text-2xl font-bold text-white block mt-0.5">R$ 210.390,04</span>
+                  <span className="text-[10px] text-slate-400 font-sans block">Garante 3,3 meses de sobrevida total</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 3 Accounting & Legal Pillars */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Pilar 1 */}
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3">
+                <div className="h-10 w-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
+                  <Scale className="w-5 h-5" />
+                </div>
+                <h4 className="text-base font-bold text-slate-900">
+                  1. Tipicidade Orçamentária
+                </h4>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Conforme a <strong>Lei Federal nº 4.591/64 (Art. 12)</strong> e o <strong>Código Civil (Art. 1.336, I)</strong>, 
+                  a <em>Taxa Condominial Ordinária</em> serve exclusivamente para suportar o custeio operacional rotineiro 
+                  (portaria, limpeza, elevadores, energia comum, seguro, síndico e administradora).
+                </p>
+                <div className="p-2.5 rounded-lg bg-blue-50 border border-blue-200 text-[11px] text-blue-900">
+                  <strong>Regra de Ouro:</strong> Compras de bens duráveis (máquinas, equipamentos e reformas) são despesas extraordinárias 
+                  e não podem onerar permanentemente a cota ordinária mensal.
+                </div>
+              </div>
+
+              {/* Pilar 2 */}
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3">
+                <div className="h-10 w-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+                  <CheckCircle className="w-5 h-5" />
+                </div>
+                <h4 className="text-base font-bold text-slate-900">
+                  2. Máquinas Já 100% Quitadas
+                </h4>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  A taxa de R$ 1.545,90 foi concebida no período de implantação para custear a aquisição das 
+                  <strong> Máquinas e Equipamentos (R$ 76.800,00)</strong>, pagas em 3 parcelas de <strong>R$ 25.600,00</strong> em Maio, Junho e Julho/2026.
+                </p>
+                <div className="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-[11px] text-emerald-900">
+                  <strong>Quitação Concluída:</strong> Essas parcelas <strong>já terminaram em Julho</strong>. 
+                  Não faz sentido contábil manter a cota inflada para cobrir um custo que não existe mais.
+                </div>
+              </div>
+
+              {/* Pilar 3 */}
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3">
+                <div className="h-10 w-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
+                  <DollarSign className="w-5 h-5" />
+                </div>
+                <h4 className="text-base font-bold text-slate-900">
+                  3. Superávit Excessivo & Caixa
+                </h4>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Mesmo pagando todas as máquinas, o condomínio acumulou <strong>R$ 281.045,94 em conta</strong>, 
+                  sendo <strong>R$ 210.390,04 em capital de giro livre</strong>. 
+                  Nos últimos 3 meses, o superávit operacional médio foi de <strong>+ R$ 64.360,89/mês</strong>.
+                </p>
+                <div className="p-2.5 rounded-lg bg-amber-50 border border-amber-200 text-[11px] text-amber-900">
+                  <strong>Retenção Desnecessária:</strong> Acumular caixa livre sem deliberação assemblear tira liquidez dos moradores. 
+                  A taxa deve refletir a despesa real.
+                </div>
+              </div>
+            </div>
+
+            {/* Comprehensive Analytical Diagnosis: Units & R$ 281k Surplus */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <Building2 className="w-5 h-5 text-indigo-600" />
+                    Diagnóstico Contábil: Base de Unidades (65 Unidades) & Saldo de R$ 281 Mil
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Memória de cálculo que comprova matematicamente a sobrearrecadação e o esgotamento das justificativas de implantação
+                  </p>
+                </div>
+                <span className="px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 flex items-center gap-1.5 self-start sm:self-auto">
+                  <Coins className="w-3.5 h-3.5 text-indigo-600" />
+                  Base Auditada: 65 Unidades
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Diagnóstico 1: Base das 65 Unidades */}
+                <div className="p-5 rounded-xl border border-slate-200 bg-slate-50/70 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+                      <Users className="w-4 h-4 text-indigo-600" />
+                      Número de Unidades
+                    </span>
+                    <span className="text-xs font-mono font-bold bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded">
+                      65 Unidades
+                    </span>
+                  </div>
+                  <div className="space-y-1.5 text-xs text-slate-600">
+                    <p className="leading-relaxed">
+                      <strong>Comprovação na Arrecadação:</strong> Em Agosto/2026, a receita ordinária foi de <strong className="text-slate-900 font-mono">R$ 100.504,10</strong> (e em Julho <strong className="text-slate-900 font-mono">R$ 101.634,62</strong>).
+                    </p>
+                    <div className="p-2.5 bg-white rounded-lg border border-slate-200 font-mono text-[11px] text-slate-800 space-y-1">
+                      <div>65 unid. × R$ 1.545,90 = <strong>R$ 100.483,50/mês</strong></div>
+                      <div className="text-emerald-700 font-semibold">Custo Operacional Real: R$ 69.015,76 ÷ 65 = <strong>R$ 1.061,78/unid.</strong></div>
+                      <div className="text-indigo-700 font-semibold">Custo com Reserva 10%: R$ 75.917,34 ÷ 65 = <strong>R$ 1.167,96/unid.</strong></div>
+                    </div>
+                    <p className="text-[11px] text-slate-500 leading-tight">
+                      A taxa de R$ 1.545,90 cobra <strong>R$ 377,94 a mais por unidade todos os meses</strong> além do custo operacional integral com fundo de reserva.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Diagnóstico 2: Fim da Compra de Máquinas */}
+                <div className="p-5 rounded-xl border border-emerald-200 bg-emerald-50/50 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 flex items-center gap-1.5">
+                      <Receipt className="w-4 h-4 text-emerald-600" />
+                      Fim das Máquinas (R$ 76,8K)
+                    </span>
+                    <span className="text-xs font-mono font-bold bg-emerald-200/80 text-emerald-900 px-2 py-0.5 rounded">
+                      Quitado 100%
+                    </span>
+                  </div>
+                  <div className="space-y-1.5 text-xs text-slate-600">
+                    <p className="leading-relaxed">
+                      <strong>Impacto por Unidade Eliminado:</strong> A compra de equipamentos consumia <strong className="text-slate-900 font-mono">R$ 25.600,00/mês</strong> em 3 parcelas (Mai, Jun e Jul/2026).
+                    </p>
+                    <div className="p-2.5 bg-white rounded-lg border border-emerald-200 font-mono text-[11px] text-slate-800 space-y-1">
+                      <div>Parcela de Máquinas: R$ 25.600,00 ÷ 65 = <strong className="text-rose-600">R$ 393,85/unid./mês</strong></div>
+                      <div className="text-emerald-700 font-semibold">Status em Agosto/2026: <strong>QUITADA (R$ 0,00)</strong></div>
+                      <div className="text-slate-700">Taxa deduzida de máquinas: R$ 1.545,90 − R$ 393,85 = <strong>R$ 1.152,05</strong></div>
+                    </div>
+                    <p className="text-[11px] text-emerald-800 leading-tight">
+                      Com o término em Julho, os moradores continuam pagando uma taxa inflada em <strong>R$ 393,85/mês</strong> por um bem já 100% pago.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Diagnóstico 3: Saldo Excessivo de R$ 281 Mil */}
+                <div className="p-5 rounded-xl border border-amber-200 bg-amber-50/50 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold uppercase tracking-wider text-amber-800 flex items-center gap-1.5">
+                      <Sparkles className="w-4 h-4 text-amber-600" />
+                      Caixa de R$ 281 Mil
+                    </span>
+                    <span className="text-xs font-mono font-bold bg-amber-200/80 text-amber-900 px-2 py-0.5 rounded">
+                      4,1 Meses de Giro
+                    </span>
+                  </div>
+                  <div className="space-y-1.5 text-xs text-slate-600">
+                    <p className="leading-relaxed">
+                      <strong>Excesso Retido sem Destinação:</strong> A praxe contábil (Secovi/IBRACON) orienta manter entre 1,5 e 2 meses de despesas de custeio (<strong className="text-slate-900 font-mono">R$ 103K a R$ 138K</strong>).
+                    </p>
+                    <div className="p-2.5 bg-white rounded-lg border border-amber-200 font-mono text-[11px] text-slate-800 space-y-1">
+                      <div>Saldo Real Acumulado: <strong className="text-slate-900">R$ 281.045,94</strong></div>
+                      <div>Teto Recomendado de Reserva: <strong className="text-slate-700">R$ 138.000,00</strong></div>
+                      <div className="text-amber-800 font-semibold">Excesso de Liquidez Retido: <strong>R$ 143.045,94</strong></div>
+                    </div>
+                    <p className="text-[11px] text-amber-900 leading-tight">
+                      Aplicações financeiras a CDI geram <strong>+ R$ 2.400,00 a R$ 2.800,00/mês</strong> de rendimentos passivos adicionais.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Interactive Fee Simulator */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <Sliders className="w-5 h-5 text-indigo-600" />
+                    Simulador Dinâmico de Cota Condominial
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Ajuste o valor da taxa e a base de unidades para verificar o impacto financeiro unitário e coletivo em tempo real
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-slate-500">Taxa de Referência:</span>
+                  <span className="text-xs font-bold font-mono text-rose-700 bg-rose-50 px-2.5 py-1 rounded border border-rose-200">
+                    R$ 1.545,90
+                  </span>
+                </div>
+              </div>
+
+              {/* Slider and Controls */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+                <div className="lg:col-span-2 space-y-5">
+                  {/* Units selector */}
+                  <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="font-bold text-slate-700 flex items-center gap-1.5">
+                        <Users className="w-3.5 h-3.5 text-indigo-600" />
+                        Base de Unidades do Silo 240:
+                      </span>
+                      <span className="font-mono font-bold text-indigo-700 text-sm">
+                        {simulatedUnits} unidades autônomas
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="range"
+                        min={50}
+                        max={80}
+                        step={1}
+                        value={simulatedUnits}
+                        onChange={(e) => setSimulatedUnits(Number(e.target.value))}
+                        className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                      />
+                      <div className="flex gap-1 shrink-0">
+                        {[60, 65, 68, 70].map((u) => (
+                          <button
+                            key={u}
+                            type="button"
+                            onClick={() => setSimulatedUnits(u)}
+                            className={`px-2 py-1 rounded text-[10px] font-mono font-bold transition-all ${
+                              simulatedUnits === u
+                                ? 'bg-indigo-600 text-white shadow-xs'
+                                : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
+                            }`}
+                          >
+                            {u}{u === 65 && ' (Oficial)'}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Fee slider */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="font-bold text-slate-700">Valor da Taxa Simulada (por unidade):</span>
+                      <span className="text-xl font-extrabold font-mono text-indigo-700">
+                        R$ {simulatedTaxa.toFixed(2).replace('.', ',')}
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min={700}
+                      max={1545}
+                      step={15}
+                      value={simulatedTaxa}
+                      onChange={(e) => setSimulatedTaxa(Number(e.target.value))}
+                      className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                    />
+                    <div className="flex justify-between text-[10px] text-slate-400 font-mono">
+                      <span>R$ 700,00 (Mínimo Custeio)</span>
+                      <span className="text-indigo-600 font-bold">R$ 965,00 (Recomendado)</span>
+                      <span>R$ 1.545,90 (Atual)</span>
+                    </div>
+                  </div>
+
+                  {/* Preset Scenarios Buttons */}
+                  <div className="space-y-1.5 pt-1">
+                    <span className="text-[11px] font-semibold text-slate-500 block">Cenários Pré-Configurados:</span>
+                    <div className="grid grid-cols-3 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSimulatedTaxa(965);
+                          setSelectedScenario('recomendado');
+                        }}
+                        className={`p-2.5 rounded-xl border text-left transition-all ${
+                          simulatedTaxa === 965
+                            ? 'bg-emerald-50 border-emerald-500 ring-2 ring-emerald-500/20'
+                            : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
+                        }`}
+                      >
+                        <span className="text-[10px] font-bold text-emerald-800 uppercase block">Recomendado (-37,6%)</span>
+                        <span className="text-sm font-bold font-mono text-slate-900 block">R$ 965,00</span>
+                        <span className="text-[10px] text-slate-500 block">Cobre custos + reserva + margem</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSimulatedTaxa(850);
+                          setSelectedScenario('economico');
+                        }}
+                        className={`p-2.5 rounded-xl border text-left transition-all ${
+                          simulatedTaxa === 850
+                            ? 'bg-blue-50 border-blue-500 ring-2 ring-blue-500/20'
+                            : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
+                        }`}
+                      >
+                        <span className="text-[10px] font-bold text-blue-800 uppercase block">Custeio Estrito (-45,0%)</span>
+                        <span className="text-sm font-bold font-mono text-slate-900 block">R$ 850,00</span>
+                        <span className="text-[10px] text-slate-500 block">Foco no bolso do morador</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSimulatedTaxa(1150);
+                          setSelectedScenario('conservador');
+                        }}
+                        className={`p-2.5 rounded-xl border text-left transition-all ${
+                          simulatedTaxa === 1150
+                            ? 'bg-amber-50 border-amber-500 ring-2 ring-amber-500/20'
+                            : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
+                        }`}
+                      >
+                        <span className="text-[10px] font-bold text-amber-800 uppercase block">Conservador (-25,6%)</span>
+                        <span className="text-sm font-bold font-mono text-slate-900 block">R$ 1.150,00</span>
+                        <span className="text-[10px] text-slate-500 block">Transição com ampla margem</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Simulation Output Card */}
+                {(() => {
+                  const monthlyDiscount = 1545.90 - simulatedTaxa;
+                  const annualDiscount = monthlyDiscount * 12;
+                  const percentDiscount = ((monthlyDiscount / 1545.90) * 100).toFixed(1);
+                  const isHealthy = simulatedTaxa >= 950;
+                  const isTight = simulatedTaxa >= 850 && simulatedTaxa < 950;
+                  const currentTotal = simulatedUnits * 1545.90;
+                  const newTotal = simulatedUnits * simulatedTaxa;
+                  const collectiveAnnualSavings = (currentTotal - newTotal) * 12;
+
+                  return (
+                    <div className="bg-slate-900 rounded-2xl p-5 text-white space-y-3 font-mono">
+                      <div className="flex items-center justify-between text-xs text-slate-400 font-sans">
+                        <span>Resultado da Simulação ({simulatedUnits} unid.)</span>
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                          isHealthy ? 'bg-emerald-500/20 text-emerald-300' : isTight ? 'bg-blue-500/20 text-blue-300' : 'bg-amber-500/20 text-amber-300'
+                        }`}>
+                          {isHealthy ? 'Equilíbrio Robusto' : isTight ? 'Custeio Viável' : 'Margem Ajustada'}
+                        </span>
+                      </div>
+
+                      <div className="pt-1">
+                        <span className="text-xs text-slate-400 font-sans block">Economia Mensal por Morador:</span>
+                        <span className="text-2xl font-black text-emerald-400">
+                          - R$ {monthlyDiscount.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </span>
+                        <span className="text-xs text-emerald-300/80 font-sans block mt-0.5">
+                          Redução de {percentDiscount}% na cota
+                        </span>
+                      </div>
+
+                      <div className="border-t border-slate-800 pt-3 space-y-1.5 text-xs">
+                        <div className="flex justify-between">
+                          <span className="text-slate-400 font-sans">Economia Anual / Morador:</span>
+                          <span className="font-bold text-emerald-400">
+                            R$ {annualDiscount.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-400 font-sans">Economia Anual Coletiva:</span>
+                          <span className="font-bold text-emerald-300">
+                            R$ {collectiveAnnualSavings.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-400 font-sans">Nova Arrecadação Mensal:</span>
+                          <span className="font-bold text-white">
+                            R$ {newTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-400 font-sans">Cobertura Caixa (R$ 281K):</span>
+                          <span className="font-bold text-white">3,3 a 4,1 meses</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-400 font-sans">Despesa Ordinária Coberta:</span>
+                          <span className="font-bold text-emerald-400">100% Garantida</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+            </div>
+
+            {/* Audit Table of Real Ordinary Expenses */}
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+              <div className="bg-slate-100/90 px-6 py-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <h4 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                    <Receipt className="w-4 h-4 text-blue-600" />
+                    Composição Analítica dos Custos Ordinários Reais Auditados
+                  </h4>
+                  <p className="text-xs text-slate-500">
+                    Média mensal consolidada dos contratos e concessionárias do Silo 240 com rateio em {simulatedUnits} unidades
+                  </p>
+                </div>
+                <div className="text-right">
+                  <span className="text-[11px] text-slate-500 block">Total Operacional Mensal:</span>
+                  <span className="text-sm font-bold font-mono text-slate-900">
+                    R$ 75.917,34 / mês (R$ {(75917.34 / simulatedUnits).toFixed(2).replace('.', ',')} / unid.)
+                  </span>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-50 text-slate-600 uppercase font-semibold border-b border-slate-200">
+                    <tr>
+                      <th className="py-3 px-4">Item de Custo Ordinário</th>
+                      <th className="py-3 px-4">Classificação</th>
+                      <th className="py-3 px-4">Base Contratual / Comprovação</th>
+                      <th className="py-3 px-4 text-right">Custo Total Mensal</th>
+                      <th className="py-3 px-4 text-right">Custo / Unid. ({simulatedUnits} unid.)</th>
+                      <th className="py-3 px-4 text-right">% Orçamento</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {ordinaryExpensesBenchmark.map((item, idx) => {
+                      const percentage = ((item.monthlyAverage / 75917.34) * 100).toFixed(1);
+                      const perUnit = (item.monthlyAverage / simulatedUnits).toFixed(2).replace('.', ',');
+                      return (
+                        <tr key={item.id} className="hover:bg-slate-50/70 transition-colors">
+                          <td className="py-2.5 px-4 font-semibold text-slate-900 flex items-center gap-2">
+                            <span className="text-slate-400 font-mono text-[10px] w-4">{idx + 1}.</span>
+                            <span>{item.name}</span>
+                          </td>
+                          <td className="py-2.5 px-4 text-slate-600">
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-semibold border ${
+                              item.essentiality === 'Obrigatório'
+                                ? 'bg-red-50 text-red-700 border-red-200'
+                                : item.essentiality === 'Concessionária'
+                                ? 'bg-amber-50 text-amber-700 border-amber-200'
+                                : item.essentiality === 'Contratual'
+                                ? 'bg-blue-50 text-blue-700 border-blue-200'
+                                : 'bg-slate-100 text-slate-700 border-slate-200'
+                            }`}>
+                              {item.essentiality}
+                            </span>
+                          </td>
+                          <td className="py-2.5 px-4 text-slate-500 font-sans">
+                            {item.basis}
+                          </td>
+                          <td className="py-2.5 px-4 text-right font-mono font-bold text-slate-800 whitespace-nowrap">
+                            R$ {item.monthlyAverage.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </td>
+                          <td className="py-2.5 px-4 text-right font-mono font-semibold text-indigo-700 whitespace-nowrap">
+                            R$ {perUnit}
+                          </td>
+                          <td className="py-2.5 px-4 text-right font-mono text-slate-500 whitespace-nowrap">
+                            {percentage}%
+                          </td>
+                        </tr>
+                      );
+                    })}
+
+                    {/* Subtotal Operacional Direto */}
+                    <tr className="bg-slate-50 font-bold border-t-2 border-slate-300">
+                      <td colSpan={3} className="py-3 px-4 text-slate-900 uppercase">
+                        Subtotal dos Custos Operacionais Diretos
+                      </td>
+                      <td className="py-3 px-4 text-right font-mono text-slate-900 text-sm">
+                        R$ 69.015,76
+                      </td>
+                      <td className="py-3 px-4 text-right font-mono text-indigo-800 text-sm">
+                        R$ {(69015.76 / simulatedUnits).toFixed(2).replace('.', ',')}
+                      </td>
+                      <td className="py-3 px-4 text-right font-mono text-slate-700">
+                        90,9%
+                      </td>
+                    </tr>
+
+                    {/* Fundo de Reserva Legal 10% */}
+                    <tr className="bg-amber-50/60 font-semibold text-amber-900">
+                      <td colSpan={3} className="py-3 px-4">
+                        + Provisão de Fundo de Reserva Legal (10% sobre custos operacionais)
+                      </td>
+                      <td className="py-3 px-4 text-right font-mono text-amber-900">
+                        R$ 6.901,58
+                      </td>
+                      <td className="py-3 px-4 text-right font-mono text-amber-900">
+                        R$ {(6901.58 / simulatedUnits).toFixed(2).replace('.', ',')}
+                      </td>
+                      <td className="py-3 px-4 text-right font-mono text-amber-700">
+                        9,1%
+                      </td>
+                    </tr>
+
+                    {/* Total Geral Necessário */}
+                    <tr className="bg-emerald-50 font-bold text-emerald-950 border-t-2 border-emerald-300">
+                      <td colSpan={3} className="py-3.5 px-4 text-sm uppercase">
+                        Orçamento Ordinário Mensal Total Necessário (Custeio + Reserva)
+                      </td>
+                      <td className="py-3.5 px-4 text-right font-mono text-emerald-800 text-base">
+                        R$ 75.917,34
+                      </td>
+                      <td className="py-3.5 px-4 text-right font-mono text-emerald-900 text-base">
+                        R$ {(75917.34 / simulatedUnits).toFixed(2).replace('.', ',')}
+                      </td>
+                      <td className="py-3.5 px-4 text-right font-mono text-emerald-800">
+                        100,0%
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Directives for Extraordinary Expenses */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-5">
+              <div className="flex items-center gap-2 text-indigo-700 font-bold text-base border-b border-slate-100 pb-3">
+                <AlertTriangle className="w-5 h-5 text-indigo-600" />
+                Regramento Contábil & Governança de Despesas Extraordinárias
+              </div>
+
+              <div className="p-4 rounded-xl border border-rose-200 bg-rose-50/80 text-xs text-rose-950 flex items-start gap-3">
+                <ShieldCheck className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <strong>VEDAÇÃO EXPRESSA: BENS DE CAPITAL NÃO PERTENCEM À TAXA ORDINÁRIA</strong>
+                  <p className="leading-relaxed">
+                    Compras de equipamentos duráveis (geradores, catracas, mobília, climatização, maquinário de academia) 
+                    e obras estruturais <strong>NÃO PODEM ser embutidas na cota ordinária mensal</strong>. 
+                    A taxa ordinária serve apenas para manter a operação em marcha; investimentos de capital exigem deliberação prévia 
+                    e cobrança exclusiva via <em>Taxa Extraordinária Temporária</em>.
+                  </p>
+                </div>
+              </div>
+
+              <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                Para que a redução da taxa ordinária permaneça sustentável ao longo do tempo, o condomínio deve adotar 
+                uma <strong>política estrita de segregação contábil</strong>, apresentada e aprovada em Assembleia Geral:
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-700">
+                <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5">
+                  <div className="font-bold text-slate-900 flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-indigo-600" />
+                    1. Vedação de Investimentos na Taxa Ordinária
+                  </div>
+                  <p className="text-slate-600 leading-relaxed">
+                    Fica expressamente vedado embutir compras de bens de capital (como novos maquinários, catracas, mobília ou geradores) 
+                    dentro da cota ordinária mensal. Cada compra deve ter origem contábil delimitada.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5">
+                  <div className="font-bold text-slate-900 flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-indigo-600" />
+                    2. Aprovação Prévia por Taxa Extraordinária Específica
+                  </div>
+                  <p className="text-slate-600 leading-relaxed">
+                    Sempre que houver necessidade de aquisição de novos equipamentos duráveis, a gestão deverá submeter 
+                    à Assembleia Geral uma proposta com <strong>mínimo de 3 orçamentos</strong>, definindo o valor total, 
+                    o número exato de parcelas e o rateio por fração ideal.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5">
+                  <div className="font-bold text-slate-900 flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-indigo-600" />
+                    3. Extinção Automática da Cobrança ao Fim das Parcelas
+                  </div>
+                  <p className="text-slate-600 leading-relaxed">
+                    A taxa extraordinária deve ser cobrada em linha apartada no boleto do aplicativo Gruvi e cessar 
+                    automaticamente assim que a última parcela do bem for quitada, impedindo a perpetuação indevida de custos.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5">
+                  <div className="font-bold text-slate-900 flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-indigo-600" />
+                    4. Conformidade com a Lei do Inquilinato (Lei nº 8.245/91)
+                  </div>
+                  <p className="text-slate-600 leading-relaxed">
+                    A separação clara entre ordinário e extraordinário resguarda os proprietários que alugam suas unidades, 
+                    pois a lei determina que as benfeitorias duráveis competem ao locador (proprietário), enquanto o custeio de rotina compete ao locatário (inquilino).
+                  </p>
+                </div>
+              </div>
+
+              {/* Case Study Callout */}
+              <div className="p-4 rounded-xl border border-emerald-200 bg-emerald-50/70 flex items-start gap-3">
+                <CheckCircle className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <div className="text-xs text-emerald-950 space-y-1">
+                  <strong>Caso Prático de Sucesso já executado no Silo 240:</strong>
+                  <p className="text-emerald-900/90 leading-relaxed">
+                    A implantação do sistema de segurança predial foi rateada através da rubrica carimbada 
+                    <em>"Taxa Extra - Sistema de Segurança"</em>, que arrecadou R$ 47.668,58 com prestação de contas apartada. 
+                    O mesmo modelo deve ser seguido para qualquer investimento futuro, protegendo a cota ordinária em seu valor justo e reduzido.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Formal Draft for Assembly Agenda */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                <div>
+                  <h4 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-indigo-600" />
+                    Minuta da Proposta para Pauta da Próxima Assembleia Geral (AGO/AGE)
+                  </h4>
+                  <p className="text-xs text-slate-500">
+                    Texto técnico pronto para ser copiado e protocolado formalmente perante a sindicatura e conselho
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleCopyProposal}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white transition-colors cursor-pointer shrink-0 shadow-xs"
+                >
+                  {copiedProposalText ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>{copiedProposalText ? 'Copiado!' : 'Copiar Texto Completo'}</span>
+                </button>
+              </div>
+
+              <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-800 leading-relaxed font-mono whitespace-pre-wrap select-all max-h-96 overflow-y-auto">
+{`PROPOSTA DE DELIBERAÇÃO ASSEMBLEAR - CONDOMÍNIO DO EDIFÍCIO MOINHO SILO 240
+
+ITEM DE PAUTA SUGERIDO:
+"Revisão e Redução do Valor da Taxa Condominial Ordinária para o Exercício 2026/2027 e Regulamentação das Despesas Extraordinárias de Capital."
+
+1. JUSTIFICATIVA CONTÁBIL & BASE DE UNIDADES:
+• A base cadastral do condomínio é composta por ${simulatedUnits} unidades autônomas, que atualmente recolhem R$ 1.545,90 por mês cada, gerando arrecadação bruta de R$ ${(simulatedUnits * 1545.90).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mês.
+• A taxa de R$ 1.545,90 foi fixada durante a implantação inicial para suportar compras de bens de capital duráveis (máquinas e equipamentos no total de R$ 76.800,00, pagas em 3x R$ 25.600,00). Esse custo pesava R$ ${(25600 / simulatedUnits).toFixed(2).replace('.', ',')}/mês por unidade e FOI 100% QUITADO em Julho/2026.
+• O custeio operacional rotineiro real auditado do Silo 240 (portaria 24h Fênix, limpeza, energia comum, manutenção de elevadores, síndico, administradora Controlar, seguro predial e tributos) totaliza apenas R$ 69.015,76/mês (R$ ${(69015.76 / simulatedUnits).toFixed(2).replace('.', ',')}/unidade).
+• Mesmo após pagar todas as máquinas, o condomínio acumulou R$ 281.045,94 em saldo de caixa/aplicações (sendo R$ 210.390,04 em capital de giro livre), o equivalente a 4,1 meses de sobrevida total. O superávit médio dos últimos 3 meses foi de + R$ 64.360,89/mês, configurando sobrearrecadação evidente.
+
+2. PROPOSTA DE VOTAÇÃO:
+a) APROVAR a redução imediata da cota condominial ordinária de referência de R$ 1.545,90 para R$ ${simulatedTaxa.toFixed(2).replace('.', ',')} por mês (redução de ${(((1545.90 - simulatedTaxa) / 1545.90) * 100).toFixed(1)}%, gerando economia anual de R$ ${((1545.90 - simulatedTaxa) * 12).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} por unidade e economia coletiva de R$ ${((simulatedUnits * 1545.90 - simulatedUnits * simulatedTaxa) * 12).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/ano no condomínio).
+b) DESTINAR 10% da arrecadação ordinária mensal (aproximadamente R$ 6.900,00/mês) para o Fundo de Reserva Legal, preservando a higidez do patrimônio coletivo.
+c) INSTITUIR que quaisquer futuras aquisições de bens duráveis, benfeitorias ou maquinários deverão ser propostas e aprovadas EXCLUSIVAMENTE sob a modalidade de Taxa Extraordinária específica, com mínimo de 3 orçamentos, prazo e número pré-determinado de parcelas, vedada a sua incorporação à taxa ordinária mensal.
+
+Subscrito por: Condôminos e Proprietários do Complexo Multiuso Moinho Recife - Silo 240.`}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 4: Detailed Monthly Balances Timeline */}
         {activeTab === 'timeline' && (
           <div className="space-y-6">
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">

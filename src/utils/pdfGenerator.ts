@@ -50,7 +50,7 @@ const ROSE_DARK = [190, 18, 60]; // #be123c
 
 export function generateExecutivePdf(
   scope: 'current' | 'all',
-  activeTab: 'dashboard' | 'inadimplencia' | 'analise281k' | 'timeline' | 'documentos',
+  activeTab: 'dashboard' | 'inadimplencia' | 'analise281k' | 'propostaTaxa' | 'timeline' | 'documentos',
   monthlyTimeline: MonthSummaryForPdf[],
   grouping: TopGrouping,
   selectedFilterLabel: string
@@ -536,7 +536,130 @@ export function generateExecutivePdf(
     addSignatures((doc as any).lastAutoTable.finalY + 8);
   };
 
-  // 4. RENDER TIMELINE TAB (Saldos Mensais e Médias Móveis)
+  // 4. RENDER PROPOSTA NOVA TAXA ORDINÁRIA
+  const renderPropostaTaxaSection = (isFirstPage: boolean) => {
+    if (!isFirstPage) doc.addPage();
+    addHeader('Parecer Contábil: Proposta de Nova Taxa Condominial Ordinária', 'Argumentação Técnica, Custo Operacional Auditado, Base de 65 Unidades e Redução da Cota (Silo 240)');
+
+    drawKpiBoxes([
+      { label: 'Taxa Atual (65 Unidades)', value: 'R$ 1.545,90', sub: 'Total: R$ 100.483,50/mês', color: ROSE_DARK },
+      { label: 'Nova Taxa Recomendada', value: 'R$ 965,00', sub: 'Redução de - 37,6% (- R$ 580,90/mês)', color: EMERALD_DARK },
+      { label: 'Economia Anual / Morador', value: 'R$ 6.970,80', sub: 'Coletiva: R$ 453.102,00/ano', color: BLUE_HEADER },
+      { label: 'Saldo Caixa / Investimentos', value: 'R$ 281.045,94', sub: '4,1 meses de sobrevida (R$ 210K livre)', color: SLATE_DARK }
+    ], 40);
+
+    let currentY = 58;
+
+    // Card de Fundamentação Jurídico-Contábil
+    doc.setFillColor(SLATE_LIGHT[0], SLATE_LIGHT[1], SLATE_LIGHT[2]);
+    doc.roundedRect(margin, currentY, pageWidth - margin * 2, 29, 1.5, 1.5, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7.5);
+    doc.setTextColor(SLATE_DARK[0], SLATE_DARK[1], SLATE_DARK[2]);
+    doc.text('FUNDAMENTAÇÃO CONTÁBIL, RATEIO EM 65 UNIDADES E REGRAMENTO EXTRAORDINÁRIO (LEI 4.591/64 E CC ART. 1.336/1.341)', margin + 3, currentY + 4.5);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6.1);
+    doc.text(
+      '1. Base de Rateio (65 Unidades): A receita ordinária mensal estabilizada em R$ 100.504,10 (Agosto/26) confirma a base de 65 unidades a R$ 1.545,90/mês.\n' +
+      '   O custo operacional real auditado é de R$ 69.015,76/mês (R$ 1.061,78/unid.) e com 10% de Fundo de Reserva é de R$ 75.917,34/mês (R$ 1.167,96/unid.).\n' +
+      '2. Quitação Integral das Máquinas (R$ 76.800): As 3 parcelas de R$ 25.600,00 (Mai, Jun e Jul/26) que pesavam R$ 393,85/unidade/mês foram 100% quitadas\n' +
+      '   em Julho/26. Manter a cota em R$ 1.545,90 após o término dos pagamentos constitui enriquecimento sem causa do caixa e oneração indevida dos condôminos.\n' +
+      '3. Saldo Excessivo de R$ 281 Mil & Superávit Crônico: A média móvel líquida de Jun a Ago foi de + R$ 64.360,89/mês e o caixa soma R$ 281.045,94 (4,1 meses de giro).\n' +
+      '   A boa prática contábil (Secovi) recomenda 1,5 a 2 meses de giro (R$ 138K), havendo R$ 143K de excesso retido. O CDI rende ~R$ 2.500/mês em receitas passivas.\n' +
+      '4. Diretriz Imperativa para Gastos Extraordinários: Novos equipamentos duráveis ou reformas NÃO PODEM compor a taxa ordinária. Devem ser custeados\n' +
+      '   exclusivamente por Taxa Extraordinária com 3 orçamentos, aprovação assemblear, prazo pré-fixado e extinção automática ao término das parcelas.',
+      margin + 3,
+      currentY + 8.5
+    );
+
+    currentY += 33;
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.setTextColor(SLATE_DARK[0], SLATE_DARK[1], SLATE_DARK[2]);
+    doc.text('1. CUSTOS OPERACIONAIS ORDINÁRIOS REAIS DO CONDOMÍNIO (MÉDIA MENSAL AUDITADA • 65 UNIDADES)', margin, currentY);
+
+    const costRows = [
+      ['Mão de Obra Terceirizada (Portaria 24h & Limpeza)', 'Contrato Fênix Terceirizações', 'R$ 37.000,00', 'R$ 569,23', '48,7%'],
+      ['Pró-Labore do Síndico Profissional', 'Assembleia Geral de Instalação (RPA)', 'R$ 5.891,92', 'R$ 90,64', '7,8%'],
+      ['Neoenergia (Áreas Comuns, Bombas e Gerador)', 'Concessionária Elétrica Estadual', 'R$ 5.200,00', 'R$ 80,00', '6,8%'],
+      ['Manutenção Preventiva de Elevadores (Otis/Atlas)', 'Assistência Técnica Homologada', 'R$ 1.862,19', 'R$ 28,65', '2,5%'],
+      ['Internet, Telecomunicações e Plataforma Gruvi', 'Link Dedicado + Licenciamento Digital', 'R$ 1.650,00', 'R$ 25,38', '2,2%'],
+      ['Taxa de Gestão da Administradora (Controlar)', 'Contrato Mensal de Administração', 'R$ 1.620,00', 'R$ 24,92', '2,1%'],
+      ['Seguro Predial Obrigatório Contra Incêndio', 'Parcelamento Apólice Regulamentar', 'R$ 1.174,53', 'R$ 18,07', '1,5%'],
+      ['Tributos e Encargos Federais/Municipais (INSS/DARF/ISS)', 'Retenções sobre Serviços e Pró-Labore', 'R$ 2.800,00', 'R$ 43,08', '3,7%'],
+      ['Materiais de Limpeza, Conservação e Descartáveis', 'Reposição Mensal de Insumos', 'R$ 2.500,00', 'R$ 38,46', '3,3%'],
+      ['Demais Contratos (CFTV, Gás, Jurídico, Reparos, Tarifas)', 'Contratos de Rotina Operacional', 'R$ 9.317,12', 'R$ 143,34', '12,3%'],
+      ['SUBTOTAL DOS CUSTOS OPERACIONAIS ORDINÁRIOS', 'Despesa Corrente de Funcionamento', 'R$ 69.015,76', 'R$ 1.061,78', '90,9%'],
+      ['PROVISÃO DE FUNDO DE RESERVA LEGAL (10%)', 'Vinculado por Lei nº 4.591/64', 'R$ 6.901,58', 'R$ 106,18', '9,1%'],
+      ['ORÇAMENTO ORDINÁRIO MENSAL NECESSÁRIO', 'Custeio Integral + Provisão de Reserva', 'R$ 75.917,34', 'R$ 1.167,96', '100,0%']
+    ];
+
+    autoTable(doc, {
+      startY: currentY + 2,
+      head: [['Item de Custo Operacional', 'Base de Apuração / Contrato', 'Custo Mensal (R$)', 'Custo / Unid. (65 un)', '% Total']],
+      body: costRows,
+      theme: 'grid',
+      headStyles: { fillColor: [15, 23, 42], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 6.8 },
+      styles: { fontSize: 6.0, cellPadding: 1.1 },
+      columnStyles: {
+        0: { cellWidth: 62, fontStyle: 'bold' },
+        1: { cellWidth: 54 },
+        2: { cellWidth: 26, halign: 'right', fontStyle: 'bold' },
+        3: { cellWidth: 24, halign: 'right', fontStyle: 'bold', textColor: [30, 58, 138] },
+        4: { cellWidth: 16, halign: 'right' }
+      },
+      didParseCell: (data) => {
+        if (data.row.index >= costRows.length - 3) {
+          data.cell.styles.fontStyle = 'bold';
+          data.cell.styles.fillColor = data.row.index === costRows.length - 1 ? [220, 252, 231] : [241, 245, 249];
+          data.cell.styles.textColor = data.row.index === costRows.length - 1 ? [4, 120, 87] : [15, 23, 42];
+        }
+      }
+    });
+
+    currentY = (doc as any).lastAutoTable.finalY + 5;
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.setTextColor(SLATE_DARK[0], SLATE_DARK[1], SLATE_DARK[2]);
+    doc.text('2. CENÁRIOS COMPARATIVOS DE REDUÇÃO DA COTA MENSAL (RATEIO EM 65 UNIDADES)', margin, currentY);
+
+    const scenarioRows = [
+      ['Cenário Atual (Superavitário)', 'R$ 1.545,90', 'R$ 100.483,50', 'R$ 0,00 (0,0%)', 'R$ 0,00', 'Superávit excessivo de +R$ 64K/mês; máquinas já quitadas'],
+      ['Cenário 1: Redução Conservadora', 'R$ 1.150,00', 'R$ 74.750,00', '- R$ 395,90 (-25,6%)', 'R$ 4.750,80', 'Transição segura com folga; absorve fim das parcelas de máquinas'],
+      ['Cenário 2: COTA RECOMENDADA', 'R$ 965,00', 'R$ 62.725,00', '- R$ 580,90 (-37,6%)', 'R$ 6.970,80', 'Equilíbrio ideal: cobre custos (R$ 69K), amortiza excesso de caixa de R$ 281K'],
+      ['Cenário 3: Custeio Estrito Enxuto', 'R$ 850,00', 'R$ 55.250,00', '- R$ 695,90 (-45,0%)', 'R$ 8.350,80', 'Alinhado estritamente ao custeio; amparado nos R$ 210K de caixa livre']
+    ];
+
+    autoTable(doc, {
+      startY: currentY + 2,
+      head: [['Cenário Proposto', 'Nova Cota (R$)', 'Total Mensal (65 un)', 'Redução Mensal', 'Economia Anual / Morador', 'Parecer Contábil']],
+      body: scenarioRows,
+      theme: 'grid',
+      headStyles: { fillColor: [30, 58, 138], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 6.8 },
+      styles: { fontSize: 6.0, cellPadding: 1.2 },
+      columnStyles: {
+        0: { cellWidth: 38, fontStyle: 'bold' },
+        1: { cellWidth: 22, halign: 'right', fontStyle: 'bold' },
+        2: { cellWidth: 26, halign: 'right', fontStyle: 'bold' },
+        3: { cellWidth: 26, halign: 'right', fontStyle: 'bold' },
+        4: { cellWidth: 28, halign: 'right', fontStyle: 'bold' },
+        5: { cellWidth: 42 }
+      },
+      didParseCell: (data) => {
+        if (data.row.index === 2) {
+          data.cell.styles.fontStyle = 'bold';
+          data.cell.styles.fillColor = [236, 253, 245];
+          data.cell.styles.textColor = [4, 120, 87];
+        }
+      }
+    });
+
+    addSignatures((doc as any).lastAutoTable.finalY + 6);
+  };
+
+  // 5. RENDER TIMELINE TAB (Saldos Mensais e Médias Móveis)
   const renderTimelineSection = (isFirstPage: boolean) => {
     if (!isFirstPage) doc.addPage();
     addHeader('Demonstrativo de Saldos Mensais', 'Evolução Cronológica dos Saldos, Diferenças e Média Móvel (3 Meses)');
@@ -675,6 +798,7 @@ export function generateExecutivePdf(
     renderDashboardSection(true);
     renderInadimplenciaSection(false);
     renderAnalise281kSection(false);
+    renderPropostaTaxaSection(false);
     renderTimelineSection(false);
     renderDocumentosSection(false);
   } else {
@@ -685,6 +809,8 @@ export function generateExecutivePdf(
       renderInadimplenciaSection(true);
     } else if (activeTab === 'analise281k') {
       renderAnalise281kSection(true);
+    } else if (activeTab === 'propostaTaxa') {
+      renderPropostaTaxaSection(true);
     } else if (activeTab === 'timeline') {
       renderTimelineSection(true);
     } else if (activeTab === 'documentos') {
