@@ -44,7 +44,7 @@ export interface MonthSummary {
   id: string;
   name: string;
   periodLabel: string;
-  source: 'Innova' | 'Controlar';
+  source: 'Innova' | 'Controlar' | 'Transição';
   saldoAnterior: number;
   receitas: number;
   despesas: number;
@@ -64,7 +64,7 @@ interface RawMonthData {
   id: string;
   name: string;
   periodLabel: string;
-  source: 'Innova' | 'Controlar';
+  source: 'Innova' | 'Controlar' | 'Transição';
   saldoAnterior: number;
   receitas: number;
   despesas: number;
@@ -169,17 +169,27 @@ const rawMonthlyTimelineData: RawMonthData[] = [
     id: 'abr-2026',
     name: 'Abr/2026',
     periodLabel: 'Abril 2026',
-    source: 'Controlar',
+    source: 'Transição',
     saldoAnterior: 215958.52,
-    receitas: 0.00,
-    despesas: 82824.44,
+    receitas: 83890.56,
+    despesas: 166715.00,
     saldoFinal: 133134.08,
-    notes: 'Período de transição de gestão da Innova para a Controlar, fixando o saldo inicial em R$ 133.134,08.',
+    notes: 'Mês de encerramento da Innova e transição para a Controlar. Arrecadação ordinária regular de R$ 83.890,56 com liquidação das despesas operacionais do mês e custos rescisórios da Innova (R$ 166.715,00), transferindo saldo de abertura de R$ 133.134,08 para a Controlar em 01/05.',
     topRevenues: [
-      { name: 'Receitas de Transição / Saldos Vinculados', category: 'Transição', amount: 0.00 }
+      { name: 'Taxa Condominial Ordinária (Abril)', category: 'Taxa Ordinária', amount: 62134.62 },
+      { name: 'Taxa Condominial Área Comum Geral', category: 'Taxa Ordinária', amount: 17997.63 },
+      { name: 'Fundo de Reserva Ordinário', category: 'Fundo Reserva', amount: 2858.43 },
+      { name: 'Fundo de Reserva Área Comum', category: 'Fundo Reserva', amount: 899.88 }
     ],
     topExpenses: [
-      { name: 'Despesas Correntes do Período de Transição', category: 'Operacional', amount: 82824.44 }
+      { name: 'Custos de Encerramento e Transição de Contas Innova', category: 'Administração', amount: 90000.00 },
+      { name: 'Fênix Terceirizações - Portaria Abr/26 (NF 53)', category: 'Terceirização', amount: 25919.47 },
+      { name: 'Demais Despesas Operacionais e Concessionárias', category: 'Operacional', amount: 23398.97 },
+      { name: 'Tributos Federais e Retenções em Folha/NFs', category: 'Tributos', amount: 14500.00 },
+      { name: 'Honorários do Síndico Abr/26 (RPA)', category: 'Administração', amount: 5446.56 },
+      { name: 'WOM Engenharia - Laudo Recebimento 3/4', category: 'Engenharia', amount: 3650.00 },
+      { name: 'Manutenção de Elevadores', category: 'Manutenção', amount: 1862.19 },
+      { name: 'Materiais de Conservação e Reparos', category: 'Materiais', amount: 1937.81 }
     ]
   },
   {
@@ -191,10 +201,10 @@ const rawMonthlyTimelineData: RawMonthData[] = [
     receitas: 51879.14,
     despesas: 97049.94,
     saldoFinal: 87963.28,
-    notes: '1ª parcela das máquinas (R$ 25.600,00) e terceirização acumulada (R$ 59.645,46).',
+    notes: '1º mês na Controlar via Gruvi. Arrecadação ordinária inicial foi de R$ 21.533,50 devido à migração de cadastros dos condôminos (regularizada em Junho com R$ 148k), somada à Taxa de Segurança (R$ 25.123,27). Despesas incluíram 1ª parcela de máquinas (R$ 25.600,00) e terceirização (R$ 59.645,46).',
     topRevenues: [
       { name: 'Taxa Extra: Sistema de Segurança', category: 'Taxa Extra', amount: 25123.27 },
-      { name: 'Taxa Ordinária Condominial', category: 'Taxa Ordinária', amount: 21533.50 },
+      { name: 'Taxa Ordinária Condominial (Boletos Iniciais Gruvi)', category: 'Taxa Ordinária', amount: 21533.50 },
       { name: 'Taxa Extra: Fiscalização/Laudos/Projetos', category: 'Taxa Extra', amount: 3301.73 },
       { name: 'Fundo de Reserva', category: 'Fundo Reserva', amount: 1133.32 },
       { name: 'Acordo Administrativo Inadimplentes', category: 'Recuperação', amount: 1045.64 },
@@ -404,7 +414,17 @@ const allExpensesData: FinancialItem[] = [
   { id: 'mar-iss', name: 'Prefeitura do Recife - DAM ISSQN Retido', category: 'Tributos', amount: 869.47, monthId: 'mar-2026', monthLabel: 'Mar/2026 (Innova)', details: 'ISS síndico R$ 324,20 + ISS Innova R$ 545,27' },
   { id: 'mar-pis-cofins', name: 'Receita Federal - DARF 5952 PIS/COFINS/CSLL', category: 'Tributos', amount: 737.86, monthId: 'mar-2026', monthLabel: 'Mar/2026 (Innova)', details: 'Retenções das NFs da Innova' },
   { id: 'mar-locacao-not', name: 'HTM Locações - Locação de Notebook', category: 'Equipamentos', amount: 150.00, monthId: 'mar-2026', monthLabel: 'Mar/2026 (Innova)', details: 'Recibo 32419 comp. 01/2026' },
-  { id: 'mar-tar-banco', name: 'Tarifas e Custas de Boletos Itaú', category: 'Financeiras', amount: 126.36, monthId: 'mar-2026', monthLabel: 'Mar/2026 (Innova)', details: 'Tarifas operacionais de títulos' }
+  { id: 'mar-tar-banco', name: 'Tarifas e Custas de Boletos Itaú', category: 'Financeiras', amount: 126.36, monthId: 'mar-2026', monthLabel: 'Mar/2026 (Innova)', details: 'Tarifas operacionais de títulos' },
+
+  // Transição Abr/2026 Items
+  { id: 'abr-encerramento-innova', name: 'Encerramento e Transição de Contas Innova', category: 'Administração', amount: 90000.00, monthId: 'abr-2026', monthLabel: 'Abr/2026 (Transição)', details: 'Liquidação de encargos rescisórios e conciliação de contas da Innova' },
+  { id: 'abr-fenix-terc', name: 'Fênix Terceirizações - Portaria Abr/2026 (NF 53)', category: 'Terceirização', amount: 25919.47, monthId: 'abr-2026', monthLabel: 'Abr/2026 (Transição)', details: 'Mão de obra de portaria e limpeza do período' },
+  { id: 'abr-demais-operacionais', name: 'Demais Despesas Operacionais e Concessionárias', category: 'Operacional', amount: 23398.97, monthId: 'abr-2026', monthLabel: 'Abr/2026 (Transição)', details: 'Energia, água, manutenção e suprimentos' },
+  { id: 'abr-tributos', name: 'Tributos Federais e Retenções em Folha/NFs', category: 'Tributos', amount: 14500.00, monthId: 'abr-2026', monthLabel: 'Abr/2026 (Transição)', details: 'DARF, ISS e encargos do período de transição' },
+  { id: 'abr-sindico', name: 'Honorários do Síndico - Abr/2026 (RPA)', category: 'Administração', amount: 5446.56, monthId: 'abr-2026', monthLabel: 'Abr/2026 (Transição)', details: 'Maurício Lacerda Sobrinho' },
+  { id: 'abr-laudo-3', name: 'WOM Engenharia - Laudo Recebimento 3/4', category: 'Engenharia', amount: 3650.00, monthId: 'abr-2026', monthLabel: 'Abr/2026 (Transição)', details: '3ª parcela do contrato de vistoria e recebimento' },
+  { id: 'abr-elevadores', name: 'Manutenção de Elevadores', category: 'Manutenção', amount: 1862.19, monthId: 'abr-2026', monthLabel: 'Abr/2026 (Transição)', details: 'Manutenção preventiva mensal' },
+  { id: 'abr-materiais', name: 'Materiais de Conservação e Reparos', category: 'Materiais', amount: 1937.81, monthId: 'abr-2026', monthLabel: 'Abr/2026 (Transição)', details: 'Itens de reposição de infraestrutura' }
 ];
 
 // Top Revenues dataset compiled directly from all 4 reports
@@ -414,7 +434,7 @@ const allRevenuesData: FinancialItem[] = [
   { id: 'r-c-ord-jul', name: 'Taxa Ordinária Condominial (Julho)', category: 'Taxa Ordinária', amount: 101634.62, monthId: 'consolidado-controlar', monthLabel: 'Jul (Controlar)' },
   { id: 'r-c-ord-ago', name: 'Taxa Ordinária Condominial (Agosto)', category: 'Taxa Ordinária', amount: 100504.10, monthId: 'consolidado-controlar', monthLabel: 'Ago (Controlar)' },
   { id: 'r-c-extra-seg-mai', name: 'Taxa Extra: Sistema de Segurança (Maio)', category: 'Taxa Extra', amount: 25123.27, monthId: 'consolidado-controlar', monthLabel: 'Mai (Controlar)' },
-  { id: 'r-c-ord-mai', name: 'Taxa Ordinária Condominial (Maio)', category: 'Taxa Ordinária', amount: 21533.50, monthId: 'consolidado-controlar', monthLabel: 'Mai (Controlar)' },
+  { id: 'r-c-ord-mai', name: 'Taxa Ordinária Condominial (Maio - Inicial Gruvi)', category: 'Taxa Ordinária', amount: 21533.50, monthId: 'consolidado-controlar', monthLabel: 'Mai (Controlar)', details: 'Emissão inicial no app Gruvi; saldo complementar liquidado em Junho' },
   { id: 'r-c-extra-seg-jun', name: 'Taxa Extra: Sistema de Segurança (Junho)', category: 'Taxa Extra', amount: 17445.22, monthId: 'consolidado-controlar', monthLabel: 'Jun (Controlar)' },
   { id: 'r-c-acordo-jun', name: 'Acordo Administrativo Inadimplentes (Junho)', category: 'Recuperação', amount: 10317.66, monthId: 'consolidado-controlar', monthLabel: 'Jun (Controlar)' },
   { id: 'r-c-fundo-jun', name: 'Fundo de Reserva (Junho)', category: 'Fundo Reserva', amount: 7792.80, monthId: 'consolidado-controlar', monthLabel: 'Jun (Controlar)' },
@@ -425,6 +445,12 @@ const allRevenuesData: FinancialItem[] = [
   { id: 'r-c-multas-tot', name: 'Receita com Multas de Atraso (Consolidado)', category: 'Financeira', amount: 2100.64, monthId: 'consolidado-controlar', monthLabel: 'Mai-Ago (Controlar)' },
   { id: 'r-c-fundo-mai', name: 'Fundo de Reserva (Maio)', category: 'Fundo Reserva', amount: 1133.32, monthId: 'consolidado-controlar', monthLabel: 'Mai (Controlar)' },
   { id: 'r-c-acordo-mai', name: 'Acordo Administrativo (Maio)', category: 'Recuperação', amount: 1045.64, monthId: 'consolidado-controlar', monthLabel: 'Mai (Controlar)' },
+
+  // Transição Abr/2026 Items
+  { id: 'r-abr-taxa-ord', name: 'Taxa Condominial Ordinária (Abril)', category: 'Taxa Ordinária', amount: 62134.62, monthId: 'abr-2026', monthLabel: 'Abr/2026 (Transição)', details: 'Cota ordinária mensal emitida no encerramento da Innova' },
+  { id: 'r-abr-area-comum', name: 'Taxa Condominial Área Comum Geral (Abril)', category: 'Taxa Ordinária', amount: 17997.63, monthId: 'abr-2026', monthLabel: 'Abr/2026 (Transição)' },
+  { id: 'r-abr-fundo-ord', name: 'Fundo de Reserva Ordinário (Abril)', category: 'Fundo Reserva', amount: 2858.43, monthId: 'abr-2026', monthLabel: 'Abr/2026 (Transição)' },
+  { id: 'r-abr-fundo-comum', name: 'Fundo de Reserva Área Comum (Abril)', category: 'Fundo Reserva', amount: 899.88, monthId: 'abr-2026', monthLabel: 'Abr/2026 (Transição)' },
 
   // Innova Fev/2026 Items
   { id: 'r-fev-transferencia', name: 'Depósito por Engano a Regularizar (W. Mostaert)', category: 'Regularização', amount: 51200.00, monthId: 'fev-2026', monthLabel: 'Fev/2026 (Innova)', details: 'Estornado em 26/02/2026' },
@@ -521,7 +547,9 @@ export default function App() {
         selectedMonthFilter === 'todos'
           ? 'Consolidado Geral (Todos os Períodos)'
           : selectedMonthFilter === 'consolidado-controlar'
-          ? 'Controlar Condomínio Digital (Jan a Ago/2026)'
+          ? 'Controlar Condomínio Digital (Mai a Ago/2026)'
+          : selectedMonthFilter === 'abr-2026'
+          ? 'Abril/2026 (Período de Transição Innova → Controlar)'
           : selectedMonthFilter === 'fev-2026'
           ? 'Fevereiro/2026 (Innova Housing)'
           : 'Março/2026 (Innova Housing)';
@@ -798,7 +826,7 @@ export default function App() {
                         : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                     }`}
                   >
-                    Controlar (Jan-Ago)
+                    Controlar (Mai-Ago)
                   </button>
                   <button
                     onClick={() => setSelectedMonthFilter('fev-2026')}
@@ -819,6 +847,16 @@ export default function App() {
                     }`}
                   >
                     Mar/2026 (Innova)
+                  </button>
+                  <button
+                    onClick={() => setSelectedMonthFilter('abr-2026')}
+                    className={`px-3 py-1 text-xs font-medium rounded-lg transition-colors ${
+                      selectedMonthFilter === 'abr-2026'
+                        ? 'bg-blue-600 text-white font-semibold shadow-xs'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    }`}
+                  >
+                    Abr/2026 (Transição)
                   </button>
                 </div>
               </div>
@@ -1893,6 +1931,37 @@ export default function App() {
                 </div>
               </div>
 
+              {/* Auditoria Específica da Transição: Abril e Maio/2026 */}
+              <div className="bg-amber-50/70 border border-amber-200 rounded-xl p-4 mb-6 shadow-xs flex flex-col md:flex-row items-start justify-between gap-4">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-amber-600 text-white rounded-lg shrink-0 mt-0.5 shadow-xs">
+                    <AlertTriangle className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h5 className="text-xs font-bold text-amber-950 uppercase tracking-wider flex items-center gap-2">
+                      <span>Auditoria do Período de Transição: Abril e Maio/2026</span>
+                      <span className="bg-amber-200 text-amber-900 text-[10px] px-2 py-0.5 rounded font-bold">Esclarecimento Oficial</span>
+                    </h5>
+                    <div className="text-xs text-amber-900/90 mt-1.5 space-y-1.5 leading-relaxed">
+                      <p>
+                        • <strong>Abril/2026 (Encerramento da Innova):</strong> Teve receita ordinária emitida de <strong>R$ 83.890,56</strong> (cota ordinária padrão) e despesas de <strong>R$ 166.715,00</strong> (custeio operacional + custos rescisórios e conciliação final da Innova). O déficit de R$ 82.824,44 absorveu as obrigações pendentes e transferiu o saldo de <strong>R$ 133.134,08</strong> para a nova gestão.
+                      </p>
+                      <p>
+                        • <strong>Maio/2026 (1º Mês Controlar / Gruvi):</strong> A receita aparente foi de <strong>R$ 51.879,14</strong> (sendo apenas R$ 21.533,50 de taxa ordinária) devido ao período de adaptação dos condôminos ao novo aplicativo <strong>Gruvi</strong> e migração da carteira de boletos bancários.
+                      </p>
+                      <p>
+                        • <strong>Compensação em Junho/2026:</strong> Com a regularização dos cadastros, os boletos pendentes da transição foram pagos acumuladamente, fazendo a taxa ordinária saltar para <strong>R$ 148.068,86</strong> (receita total de <strong>R$ 184.384,42</strong>). A soma de Maio e Junho totalizou <strong>R$ 236.263,56</strong> (média saudável de R$ 118,1K/mês), restabelecendo plenamente a normalidade contábil.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-white px-3.5 py-2.5 rounded-xl border border-amber-200 shrink-0 text-center shadow-2xs self-stretch md:self-auto flex flex-col justify-center min-w-[180px]">
+                  <span className="text-[10px] uppercase font-bold text-amber-800">Saldo Transferido</span>
+                  <span className="text-base font-black font-mono text-slate-900">R$ 133.134,08</span>
+                  <span className="text-[10px] text-slate-500">Innova → Controlar (01/05)</span>
+                </div>
+              </div>
+
               {/* Analytical Monthly Table with Difference, Moving Average, and Click-to-Expand */}
               <div className="border border-slate-200 rounded-xl overflow-hidden shadow-2xs mb-6">
                 <div className="bg-slate-100/90 px-4 py-3 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
@@ -1972,7 +2041,9 @@ export default function App() {
                               <span className={`px-2 py-0.5 rounded text-[10px] font-semibold border ${
                                 month.source === 'Innova'
                                   ? 'bg-blue-50 text-blue-700 border-blue-200'
-                                  : 'bg-amber-50 text-amber-700 border-amber-200'
+                                  : month.source === 'Controlar'
+                                  ? 'bg-amber-50 text-amber-700 border-amber-200'
+                                  : 'bg-purple-50 text-purple-700 border-purple-200'
                               }`}>
                                 {month.source}
                               </span>

@@ -5,7 +5,7 @@ export interface MonthSummaryForPdf {
   id: string;
   name: string;
   periodLabel: string;
-  source: 'Innova' | 'Controlar';
+  source: 'Innova' | 'Controlar' | 'Transição';
   saldoAnterior: number;
   receitas: number;
   despesas: number;
@@ -602,24 +602,26 @@ export function generateExecutivePdf(
 
     // Notas explicativas do cálculo
     doc.setFillColor(SLATE_LIGHT[0], SLATE_LIGHT[1], SLATE_LIGHT[2]);
-    doc.roundedRect(margin, currentY, pageWidth - margin * 2, 23, 1.5, 1.5, 'F');
+    doc.roundedRect(margin, currentY, pageWidth - margin * 2, 28, 1.5, 1.5, 'F');
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(7.5);
     doc.setTextColor(SLATE_DARK[0], SLATE_DARK[1], SLATE_DARK[2]);
-    doc.text('METODOLOGIA E ANÁLISE DA MÉDIA MÓVEL LÍQUIDA', margin + 3, currentY + 4.5);
+    doc.text('METODOLOGIA E ANÁLISE DA EVOLUÇÃO ORÇAMENTÁRIA', margin + 3, currentY + 4.5);
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(6.3);
+    doc.setFontSize(6.2);
     doc.text(
-      '• Diferença Mensal (Superávit/Déficit): Apurada como Receitas Liquidadas menos Despesas Pagas no mês.\n' +
-      '• Média Móvel (3M): Calculada estritamente sobre a coluna Diferença (Receitas - Despesas), nunca sobre o Saldo Final acumulado.\n' +
-      '• Esclarecimento Jan-Mar: No 1º trimestre, como a implantação partiu de saldo R$ 0,00, a soma das diferenças coincidiu numericamente com o saldo final da época.\n' +
-      '• Superávit Médio Trimestral Recente: Nos últimos 3 meses (Jun, Jul e Ago/2026), a média móvel líquida alcançou expressivos\n' +
-      '  + R$ 64.360,89 por mês (+R$ 108,2K em Jun, +R$ 21,4K em Jul e +R$ 63,6K em Ago).',
+      '• Diferença Mensal (Superávit/Déficit): Apurada estritamente como Receitas Líquidas menos Despesas Pagas no mês.\n' +
+      '• Média Móvel (3M): Calculada sobre a coluna Diferença (Receitas - Despesas), nunca sobre o Saldo Final acumulado.\n' +
+      '• Período de Transição (Abril/2026): Encerramento da Innova com emissão da cota ordinária de R$ 83.890,56 e liquidação de custos\n' +
+      '  operacionais e rescisórios de R$ 166.715,00, entregando saldo de abertura de R$ 133.134,08 à Controlar em 01/05/2026.\n' +
+      '• Migração Gruvi (Maio e Junho/2026): Em Maio, a taxa ordinária arrecadada foi de R$ 21.533,50 devido à adaptação cadastral dos moradores,\n' +
+      '  sendo quitada cumulativamente em Junho (R$ 148.068,86), restabelecendo a média normal de arrecadação do condomínio (~R$ 118K/mês).\n' +
+      '• Superávit Recente: Nos últimos 3 meses (Jun a Ago/2026), a média móvel líquida alcançou expressivos + R$ 64.360,89 por mês.',
       margin + 3,
       currentY + 8.5
     );
 
-    addSignatures(currentY + 28);
+    addSignatures(currentY + 33);
   };
 
   // 5. RENDER DOCUMENTOS TAB
